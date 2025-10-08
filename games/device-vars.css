@@ -1,0 +1,7 @@
+:root {
+  /* Screen window relative to the device image bounds (percentages) */
+  --screen-left: 16.6667%;
+  --screen-top: 12.1429%;
+  --screen-width: 66.6667%;
+  --screen-height: 35.7143%;
+}

@@ -1,57 +1,76 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>School Book Theme</title>
-    <style>
-        body {
-            background-color: #f9f4f5; /* Pastel background color */
-            background-image: linear-gradient(#e8e1e2 1px, transparent 1px),
-                              linear-gradient(90deg, #e8e1e2 1px, transparent 1px);
-            background-size: 20px 20px; /* Grid size */
-            font-family: 'Arial', sans-serif;
-            color: #333;
-            margin: 0;
-            padding: 20px;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background-color: rgba(255, 255, 255, 0.8);
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            color: #6a5acd; /* Pastel purple */
-            text-align: center;
-        }
-        p {
-            line-height: 1.6;
-        }
-        .image-container {
-            text-align: center;
-            margin: 20px 0;
-        }
-        .image-container img {
-            max-width: 100%;
-            height: auto;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            padding: 5px;
-        }
-    </style>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Loading…</title>
+    <meta name="description" content="Loading arcade…" />
+    <meta name="theme-color" content="#0b0d10" />
+    <link rel="stylesheet" href="/loading/styles.css" />
+    <noscript>
+        <meta http-equiv="refresh" content="1; url=/games/" />
+    </noscript>
 </head>
+
 <body>
-    <div class="container">
-        <h1>Welcome to My School Book Theme</h1>
-        <p>This is a paragraph of text. You can write anything you like here. The background has a paper-like grid, and the colors are pastel to give it a soft, school book feel.</p>
-        <div class="image-container">
-            <!-- You can add your image here -->
-            <img src="assets/book.png" alt="Book Images">
+    <div class="cube">
+        <div class="face top">
+            <div class="row">
+                <div class="square" data-index="2"></div>
+                <div class="square" data-index="1"></div>
+            </div>
+            <div class="row">
+                <div class="square" data-index="3"></div>
+            </div>
+            <div class="row">
+                <div class="square" data-index="4"></div>
+            </div>
         </div>
-        <p>Here is another paragraph. Feel free to add more content, images, or any other elements you like.</p>
+        <div class="face left">
+            <div class="row">
+                <div class="square" data-index="5"></div>
+            </div>
+            <div class="row">
+                <div class="square" data-index="6"></div>
+            </div>
+            <div class="row">
+                <div class="square" data-index="7"></div>
+                <div class="square" data-index="8"></div>
+                <div class="square" data-index="9"></div>
+            </div>
+        </div>
+        <div class="face right">
+            <div class="row">
+                <div class="square padding"></div>
+                <div class="square" data-index="15"></div>
+                <div class="square" data-index="14"></div>
+            </div>
+            <div class="row">
+                <div class="square padding"></div>
+                <div class="square padding"></div>
+                <div class="square" data-index="13"></div>
+            </div>
+            <div class="row">
+                <div class="square" data-index="10"></div>
+                <div class="square" data-index="11"></div>
+                <div class="square" data-index="12"></div>
+            </div>
+        </div>
+        <div class="face front"></div>
+        <div class="face back"></div>
+        <div class="face bottom"></div>
+        <div class="cube mini">
+            <div class="face front"></div>
+            <div class="face back"></div>
+            <div class="face top"></div>
+            <div class="face right"></div>
+            <div class="face bottom"></div>
+            <div class="face left"></div>
+        </div>
     </div>
+    <p class="caption">Booting arcade…</p>
+    <script src="/loading/reveal.js" defer></script>
 </body>
+
 </html>

@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Games — Arcade</title>
+  <meta name="description" content="Arcade hub: switch between games and play them inside the device screen." />
+  <link rel="canonical" href="https://tamigore.github.io/games/" />
+  <link rel="stylesheet" href="/games/device-vars.css" />
+  <link rel="stylesheet" href="/games/arcade.css" />
+  <meta name="robots" content="noindex" />
+  <meta name="color-scheme" content="dark" />
+  <script>
+    // Optional: Expose config via window.ARCADE_GAMES before load if you need dynamic injection
+    window.ARCADE_GAMES = window.ARCADE_GAMES || [
+      { id: 'life-of-tad', title: 'Life of Tad', src: '/games/life-of-tad/' },
+      { id: 'lot-gallery', title: 'Life of Tad — Gallery', src: '/games/life-of-tad/gallery/' },
+    ];
+  </script>
+</head>
+
+<body>
+  <div class="stage" role="application" aria-label="Arcade">
+    <p class="sr-only" id="help">Use Left/Right on the D‑pad or keyboard to switch games. Press A or Enter to load.
+      Start toggles fullscreen; Select cycles selection style.</p>
+    <div class="device-wrap" aria-describedby="help">
+      <img class="device" src="/assets/life-of-tad/device/gba-sp.png" alt="Game Boy Advance SP" />
+      <div class="screen">
+        <iframe id="screenFrame" title="Game view" src="about:blank"></iframe>
+      </div>
+      <!-- Hotspots mapped to device controls -->
+      <div class="dpad" aria-label="D-pad">
+        <button class="hot left" aria-label="Previous game"></button>
+        <button class="hot right" aria-label="Next game"></button>
+        <button class="hot up" aria-label="Previous game"></button>
+        <button class="hot down" aria-label="Next game"></button>
+      </div>
+      <div class="ab" aria-label="A and B buttons">
+        <button class="hot a" aria-label="Load selected game"></button>
+        <button class="hot b" aria-label="Back"></button>
+      </div>
+      <button class="hot start" aria-label="Toggle fullscreen"></button>
+      <button class="hot select" aria-label="Change selection"></button>
+    </div>
+  </div>
+
+  <script src="/games/arcade.js" defer></script>
+</body>
+
+</html>

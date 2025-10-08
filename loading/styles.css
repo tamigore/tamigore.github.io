@@ -1,0 +1,401 @@
+/* Reset to a clean, single copy of styles (remove duplicates/SCSS) */
+/* GameCube-inspired boot screen (clean CSS) */
+*,
+*::after,
+*::before {
+    box-sizing: border-box;
+}
+
+:root {
+    --square-radius: .15em;
+    --face-radius: .15em;
+    --drop-duration: .5s;
+    --drop-hit: .16s;
+    /* how long the initial drop lasts */
+    --path-duration: 3.8s;
+    /* stagger across faces */
+    --overlay-pulse: .75s;
+    /* bright edge pulse for drop */
+    --face-seam: .08em;
+    --face-bg-highlight: #c1c0c086; /* default face color (used only during highlight) */
+    --face-bg-transition: #74747486; /* default face color (used only during highlight) */
+}
+
+html,
+body {
+    height: 100%;
+    margin: 0
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100%;
+    perspective: 100em;
+    background: #111;
+    color: #e6e8ee;
+    font: 16px/1.6 system-ui, Segoe UI, Roboto, Inter, Arial, sans-serif;
+}
+
+/*****************************************************************************/
+/***************************** Big cube **************************************/
+/*****************************************************************************/
+
+
+/* Big cube idle bounce */
+@keyframes last_bounce {
+    20% {
+        transform: rotateX(35deg) rotateZ(45deg) translateZ(-5em);
+    }
+
+    50% {
+        transform: rotateX(47deg) rotateZ(45deg) translateZ(-4em);
+    }
+}
+
+/* Big cube idle bounce */
+@keyframes first_bounce {
+    20% {
+        transform: rotateX(35deg) rotateZ(45deg) translateZ(-5em);
+    }
+
+    50% {
+        transform: rotateX(47deg) rotateZ(45deg) translateZ(-4em);
+    }
+}
+
+.cube {
+    position: relative;
+    width: 8em;
+    height: 8em;
+    transform: rotateX(45deg) rotateZ(45deg) translateZ(-4em);
+    /* Play the same bounce at drop time, then again later for idle */
+    animation-name: first_bounce, last_bounce;
+    animation-duration: 1.5s, 3s;
+    animation-delay: var(--drop-hit), calc(var(--drop-duration) + var(--path-duration));
+    animation-timing-function: ease, ease-in-out;
+    animation-iteration-count: 1, 1;
+    animation-fill-mode: none, forwards;
+    transform-style: preserve-3d;
+    transition: all .8s ease
+}
+
+/*****************************************************************************/
+/******************************* Cube faces **********************************/
+/*****************************************************************************/
+
+/* Edge vignette pulses on impact (subtle grey gradient towards edges) */
+@keyframes impactOverlay {
+    0% {
+        background-color: transparent;
+    }
+
+    30% {
+        background-color: var(--face-bg-transition);
+    }
+
+    50% {
+        background-color: var(--face-bg-highlight);
+    }
+
+    100% {
+        background-color: transparent;
+    }
+}
+
+.face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    backface-visibility: hidden;
+    background: transparent; /* no face color by default */
+    background-color: transparent; /* no face color by default */
+    border-radius: var(--face-radius);
+}
+
+/* Inner cover fills inside area, leaving a ring of width --face-seam */
+.face::before {
+    content: "";
+    position: absolute;
+    inset: var(--face-seam);
+    border-radius: calc(max(0px, var(--face-radius) - var(--face-seam)));
+    z-index: 0;
+}
+
+.face::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    /* Draw above the squares and animate only background-color */
+    z-index: 2;
+    background-color: transparent;
+    transform: translateZ(0.05em);
+    will-change: background-color, transform;
+    animation-name: impactOverlay, impactOverlay;
+    animation-duration: var(--overlay-pulse), var(--overlay-pulse);
+    /* First pulse at drop impact; second at the end of the path */
+    animation-delay: var(--drop-hit), calc(var(--drop-duration) + var(--path-duration));
+    animation-timing-function: ease-out, ease-out;
+    animation-iteration-count: 1, 1;
+    /* Prevent the second animation from backwards-filling over the first */
+    animation-fill-mode: both, none;
+}
+
+.face.top {
+    transform: translateZ(8em);
+}
+
+.face.left {
+    transform: rotateX(-90deg) translateZ(4em) translateY(-4em);
+}
+
+.face.right {
+    transform: rotateX(-90deg) rotateY(90deg) translateZ(4em) translateY(-4em);
+}
+
+.face.front {
+    transform: rotateX(-90deg) translateZ(-4em) translateY(-4em);
+}
+
+.face.back {
+    transform: rotateX(-90deg) rotateY(90deg) translateZ(-4em) translateY(-4em);
+}
+
+.face.bottom {
+    transform: translateZ(0em);
+}
+
+.row {
+    display: flex;
+    margin: 0 0 .3em 0;
+    transform: translateZ(0)
+}
+
+.row:last-child {
+    margin: 0
+}
+
+.square {
+    height: 2.4em;
+    width: 2.4em;
+    background: #5B4AB9;
+    margin: 0 .3em 0 0;
+    position: relative;
+    opacity: 0;
+    -webkit-clip-path: inset(0 round var(--square-radius));
+    clip-path: inset(0 round var(--square-radius))
+}
+
+.row .square:last-child {
+    margin: 0
+}
+
+.square.padding {
+    background: transparent
+}
+
+/*******************************************************************/
+/****************************** Mini cube **************************/
+/*******************************************************************/
+
+/* Mini cube animations */
+@keyframes preDrop {
+    0% {
+        transform: translateZ(26.0em) rotateZ(0deg)
+    }
+
+    40% {
+        transform: translateZ(8.4em) rotateZ(8deg)
+    }
+
+    65% {
+        transform: translateZ(10.2em) rotateZ(-5deg)
+    }
+
+    85% {
+        transform: translateZ(9.25em) rotateZ(3deg)
+    }
+
+    100% {
+        transform: translateZ(9.4em) rotateZ(0deg)
+    }
+}
+
+@keyframes cubeMini {
+
+    /* Start settled on top face before movement */
+    0% {
+        transform: translateZ(9.4em)
+    }
+
+    5.5% {
+        transform: translateZ(9.4em) translateX(-2.8em) rotateY(-90deg)
+    }
+
+    11% {
+        transform: translateZ(9.4em) translateX(-5.6em) rotateY(-180deg)
+    }
+
+    16.5% {
+        transform: translateZ(9.4em) translateX(-5.6em) translateY(2.8em) rotateY(-180deg) rotateX(90deg)
+    }
+
+    22% {
+        transform: translateZ(9.4em) translateX(-5.6em) translateY(5.6em) rotateY(-180deg) rotateX(180deg)
+    }
+
+    27.5% {
+        transform: translateZ(6.6em) translateX(-5.6em) translateY(8.4em) rotateY(-180deg) rotateX(270deg)
+    }
+
+    33% {
+        transform: translateZ(3.8em) translateX(-5.6em) translateY(8.4em) rotateY(-180deg) rotateX(360deg)
+    }
+
+    38.5% {
+        transform: translateZ(1.0em) translateX(-5.6em) translateY(8.4em) rotateY(-180deg) rotateX(450deg)
+    }
+
+    44% {
+        transform: translateZ(1.0em) translateX(-2.8em) translateY(8.4em) rotateY(-180deg) rotateZ(90deg) rotateX(450deg)
+    }
+
+    49.5% {
+        transform: translateZ(1.0em) translateX(0) translateY(8.4em) rotateY(-180deg) rotateZ(180deg) rotateX(450deg)
+    }
+
+    55% {
+        transform: translateZ(1.0em) translateX(2.8em) translateY(5.6em) rotateY(-180deg) rotateZ(270deg) rotateX(450deg)
+    }
+
+    60.5% {
+        transform: translateZ(1.0em) translateX(2.8em) translateY(2.8em) rotateY(-180deg) rotateZ(360deg) rotateX(450deg)
+    }
+
+    66% {
+        transform: translateZ(1.0em) translateX(2.4em) translateY(0) rotateY(-180deg) rotateZ(450deg) rotateX(450deg)
+    }
+
+    71.5% {
+        transform: translateZ(3.8em) translateX(2.4em) translateY(0) rotateY(-180deg) rotateZ(450deg) rotateX(360deg)
+    }
+
+    77% {
+        transform: translateZ(6.6em) translateX(2.4em) translateY(0) rotateY(-180deg) rotateZ(450deg) rotateX(270deg)
+    }
+
+    82.5% {
+        transform: translateZ(6.6em) translateX(2.4em) translateY(2.8em) rotateY(-180deg) rotateZ(360deg) rotateX(270deg)
+    }
+
+    88% {
+        transform: translateZ(6.6em) translateX(2.4em) translateY(5.6em) rotateY(-180deg) rotateZ(270deg) rotateX(270deg)
+    }
+
+    95% {
+        transform: translateZ(11.4em) translateX(0) translateY(5.6em) rotateY(180deg) rotateZ(270deg) rotateX(270deg)
+    }
+
+    100% {
+        transform: translateZ(6.6em) translateX(0) translateY(5.6em) rotateY(180deg) rotateZ(270deg) rotateX(270deg)
+    }
+}
+
+.cube.mini {
+    /* Run preDrop, then cubeMini; longhand ensures correct multi-animation parsing */
+    animation-name: preDrop, cubeMini;
+    animation-duration: var(--drop-duration), var(--path-duration);
+    animation-delay: 0s, var(--drop-duration);
+    animation-timing-function: ease-out, ease-out;
+    animation-iteration-count: 1, 1;
+    animation-fill-mode: none, forwards;
+    transition: all .4s ease;
+    width: 2.4em;
+    height: 2.4em;
+    position: absolute;
+    right: 0;
+    transform: translateZ(9.4em);
+    z-index: 3;
+}
+
+.cube.mini .face {
+    backface-visibility: visible;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: #5B4AB9;
+    border: 2px solid #7262c9;
+    /* Do not render the big face inner cover on mini cube */
+}
+
+.cube.mini .face::before {
+    content: none;
+}
+
+.cube.mini .face::after {
+    content: none;
+}
+
+.cube.mini .face.back {
+    transform: translateZ(-1.2em) rotateY(180deg)
+}
+
+.cube.mini .face.right {
+    transform: rotateY(-270deg) translateX(1.2em);
+    transform-origin: top right
+}
+
+.cube.mini .face.left {
+    transform: rotateY(270deg) translateX(-1.2em);
+    transform-origin: center left
+}
+
+.cube.mini .face.top {
+    transform: rotateX(-90deg) translateY(-1.2em);
+    transform-origin: top center
+}
+
+.cube.mini .face.bottom {
+    transform: rotateX(90deg) translateY(1.2em);
+    transform-origin: bottom center
+}
+
+.cube.mini .face.front {
+    transform: translateZ(1.2em)
+}
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+        filter: opacity(1)
+    }
+}
+
+.square.revealed {
+    animation: fadeIn .22s linear forwards
+}
+
+/* Optional helpers */
+.caption {
+    position: fixed;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #ccc;
+    font-size: .9rem
+}
+
+.skip {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    color: #b9aaff;
+    text-decoration: none;
+    font-weight: 600
+}

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1">
+      <stop offset="0%" stop-color="#51d1b6"/>
+      <stop offset="100%" stop-color="#6b8afd"/>
+    </linearGradient>
+  </defs>
+  <rect width="100%" height="100%" fill="#161a22"/>
+  <rect x="20" y="20" width="1240" height="680" rx="18" fill="#0f1115" stroke="#222736"/>
+  <text x="50%" y="50%" text-anchor="middle" font-size="48" font-family="Segoe UI, Roboto, Arial, sans-serif" fill="url(#g)">Screenshot placeholder</text>
+</svg>
