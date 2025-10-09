@@ -6,6 +6,15 @@
     box-sizing: border-box;
 }
 
+/* Pixeloid Sans typeface for default text */
+@font-face {
+    font-family: 'Pixeloid Sans';
+    src: url('/assets/fonts/PixeloidSans-mLxMm.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
 :root {
     --square-radius: .15em;
     --face-radius: .15em;
@@ -17,8 +26,16 @@
     --overlay-pulse: .75s;
     /* bright edge pulse for drop */
     --face-seam: .08em;
-    --face-bg-highlight: #c1c0c086; /* default face color (used only during highlight) */
-    --face-bg-transition: #74747486; /* default face color (used only during highlight) */
+    --face-bg-highlight: #3a295853; /* default face color (used only during highlight) */
+    --face-bg-transition: #26104124; /* default face color (used only during highlight) */
+    /* Keep the mini cube slightly outside so highlights never sit on top */
+    --mini-offset: 0.12em;
+    /* Constant XY bias (due to parent cube rotation, +Y adds positive camera-Z) */
+    --mini-bias-x: 0.04em;
+    --mini-bias-y: 0.08em;
+    --mini-bias: translate3d(var(--mini-bias-x), var(--mini-bias-y), 0);
+    /* Reveal timing anchor = when cubeMini starts */
+    --reveal-t0: var(--drop-duration);
 }
 
 html,
@@ -35,7 +52,7 @@ body {
     perspective: 100em;
     background: #111;
     color: #e6e8ee;
-    font: 16px/1.6 system-ui, Segoe UI, Roboto, Inter, Arial, sans-serif;
+    font: 16px/1.6 'Pixeloid Sans', system-ui, Segoe UI, Roboto, Inter, Arial, sans-serif;
 }
 
 /*****************************************************************************/
@@ -57,11 +74,11 @@ body {
 /* Big cube idle bounce */
 @keyframes first_bounce {
     20% {
-        transform: rotateX(35deg) rotateZ(45deg) translateZ(-5em);
+        transform: rotateY(10deg) rotateX(35deg) rotateZ(45deg) translateZ(-4em);
     }
 
     50% {
-        transform: rotateX(47deg) rotateZ(45deg) translateZ(-4em);
+        transform: rotateX(45deg) rotateZ(45deg) translateZ(-4em);
     }
 }
 
@@ -88,19 +105,29 @@ body {
 /* Edge vignette pulses on impact (subtle grey gradient towards edges) */
 @keyframes impactOverlay {
     0% {
-        background-color: transparent;
+        background: transparent;
     }
 
     30% {
-        background-color: var(--face-bg-transition);
+        background: var(--face-bg-transition);
+        box-shadow: #302440 0 0 10px 5px inset;
+        z-index: -1;
     }
 
     50% {
-        background-color: var(--face-bg-highlight);
+        background: var(--face-bg-highlight);
+        box-shadow: #3e3b47c5 0 0 10px 5px inset;
+        z-index: -1;
+    }
+
+    80% {
+        background: var(--face-bg-transition);
+        box-shadow: #302440 0 0 10px 5px inset;
+        z-index: -1;
     }
 
     100% {
-        background-color: transparent;
+        background: transparent;
     }
 }
 
@@ -112,8 +139,9 @@ body {
     flex-direction: column;
     backface-visibility: hidden;
     background: transparent; /* no face color by default */
-    background-color: transparent; /* no face color by default */
     border-radius: var(--face-radius);
+    /* Ensure blend effects on this face don't interact with siblings like the mini-cube */
+    isolation: isolate;
 }
 
 /* Inner cover fills inside area, leaving a ring of width --face-seam */
@@ -122,7 +150,6 @@ body {
     position: absolute;
     inset: var(--face-seam);
     border-radius: calc(max(0px, var(--face-radius) - var(--face-seam)));
-    z-index: 0;
 }
 
 .face::after {
@@ -130,11 +157,6 @@ body {
     position: absolute;
     inset: 0;
     pointer-events: none;
-    /* Draw above the squares and animate only background-color */
-    z-index: 2;
-    background-color: transparent;
-    transform: translateZ(0.05em);
-    will-change: background-color, transform;
     animation-name: impactOverlay, impactOverlay;
     animation-duration: var(--overlay-pulse), var(--overlay-pulse);
     /* First pulse at drop impact; second at the end of the path */
@@ -172,7 +194,6 @@ body {
 .row {
     display: flex;
     margin: 0 0 .3em 0;
-    transform: translateZ(0)
 }
 
 .row:last-child {
@@ -187,8 +208,39 @@ body {
     position: relative;
     opacity: 0;
     -webkit-clip-path: inset(0 round var(--square-radius));
-    clip-path: inset(0 round var(--square-radius))
+    clip-path: inset(0 round var(--square-radius));
 }
+
+/* CSS-driven reveal: each non-padding square fades in using a scheduled delay */
+.square:not(.padding) {
+    --square-delay: 0s;
+    animation-name: fadeIn;
+    animation-duration: .22s;
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
+    animation-delay: calc(var(--reveal-t0) + var(--square-delay));
+}
+
+/* Top face (indices 1-4) — early in the path */
+.square[data-index="1"] { --square-delay: calc(0.02 * var(--path-duration) + var(--drop-hit)); }
+.square[data-index="2"] { --square-delay: calc(0.05 * var(--path-duration) + var(--drop-hit)); }
+.square[data-index="3"] { --square-delay: calc(0.09 * var(--path-duration) + var(--drop-hit)); }
+.square[data-index="4"] { --square-delay: calc(0.14 * var(--path-duration) + var(--drop-hit)); }
+
+/* Left face (indices 5-9) — mid path */
+.square[data-index="5"] { --square-delay: calc(0.18 * var(--path-duration) + var(--drop-hit)); }
+.square[data-index="6"] { --square-delay: calc(0.24 * var(--path-duration) + var(--drop-hit)); }
+.square[data-index="7"] { --square-delay: calc(0.30 * var(--path-duration) + var(--drop-hit)); }
+.square[data-index="8"] { --square-delay: calc(0.36 * var(--path-duration) + var(--drop-hit)); }
+.square[data-index="9"] { --square-delay: calc(0.42 * var(--path-duration) + var(--drop-hit)); }
+
+/* Right face (indices 10-15) — later in the path */
+.square[data-index="10"] { --square-delay: calc(0.48 * var(--path-duration) + var(--drop-hit)); }
+.square[data-index="11"] { --square-delay: calc(0.54 * var(--path-duration) + var(--drop-hit)); }
+.square[data-index="12"] { --square-delay: calc(0.60 * var(--path-duration) + var(--drop-hit)); }
+.square[data-index="13"] { --square-delay: calc(0.66 * var(--path-duration) + var(--drop-hit)); }
+.square[data-index="14"] { --square-delay: calc(0.72 * var(--path-duration) + var(--drop-hit)); }
+.square[data-index="15"] { --square-delay: calc(0.78 * var(--path-duration) + var(--drop-hit)); }
 
 .row .square:last-child {
     margin: 0
@@ -204,105 +256,52 @@ body {
 
 /* Mini cube animations */
 @keyframes preDrop {
-    0% {
-        transform: translateZ(26.0em) rotateZ(0deg)
-    }
-
-    40% {
-        transform: translateZ(8.4em) rotateZ(8deg)
-    }
-
-    65% {
-        transform: translateZ(10.2em) rotateZ(-5deg)
-    }
-
-    85% {
-        transform: translateZ(9.25em) rotateZ(3deg)
-    }
-
-    100% {
-        transform: translateZ(9.4em) rotateZ(0deg)
-    }
+    0%   { transform: var(--mini-bias) translateZ(calc(26.0em + var(--mini-offset))) rotateZ(0deg) }
+    40%  { transform: var(--mini-bias) translateZ(calc(8.4em  + var(--mini-offset))) rotateZ(8deg) }
+    65%  { transform: var(--mini-bias) translateZ(calc(10.2em + var(--mini-offset))) rotateZ(-5deg) }
+    85%  { transform: var(--mini-bias) translateZ(calc(9.25em + var(--mini-offset))) rotateZ(3deg) }
+    100% { transform: var(--mini-bias) translateZ(calc(9.4em  + var(--mini-offset))) rotateZ(0deg) }
 }
 
 @keyframes cubeMini {
-
     /* Start settled on top face before movement */
-    0% {
-        transform: translateZ(9.4em)
-    }
+    0% { transform: var(--mini-bias) translateZ(calc(9.4em + var(--mini-offset))) }
 
-    5.5% {
-        transform: translateZ(9.4em) translateX(-2.8em) rotateY(-90deg)
-    }
+    5.5% { transform: var(--mini-bias) translateZ(calc(9.4em + var(--mini-offset))) translateX(-2.8em) rotateY(-90deg) }
 
-    11% {
-        transform: translateZ(9.4em) translateX(-5.6em) rotateY(-180deg)
-    }
+    11% { transform: var(--mini-bias) translateZ(calc(9.4em + var(--mini-offset))) translateX(-5.6em) rotateY(-180deg) }
 
-    16.5% {
-        transform: translateZ(9.4em) translateX(-5.6em) translateY(2.8em) rotateY(-180deg) rotateX(90deg)
-    }
+    16.5% { transform: var(--mini-bias) translateZ(calc(9.4em + var(--mini-offset))) translateX(-5.6em) translateY(2.8em) rotateY(-180deg) rotateX(90deg) }
 
-    22% {
-        transform: translateZ(9.4em) translateX(-5.6em) translateY(5.6em) rotateY(-180deg) rotateX(180deg)
-    }
+    22% { transform: var(--mini-bias) translateZ(calc(9.4em + var(--mini-offset))) translateX(-5.6em) translateY(5.6em) rotateY(-180deg) rotateX(180deg) }
 
-    27.5% {
-        transform: translateZ(6.6em) translateX(-5.6em) translateY(8.4em) rotateY(-180deg) rotateX(270deg)
-    }
+    27.5% { transform: var(--mini-bias) translateZ(calc(6.6em + var(--mini-offset))) translateX(-5.6em) translateY(8.4em) rotateY(-180deg) rotateX(270deg) }
 
-    33% {
-        transform: translateZ(3.8em) translateX(-5.6em) translateY(8.4em) rotateY(-180deg) rotateX(360deg)
-    }
+    33% { transform: var(--mini-bias) translateZ(calc(3.8em + var(--mini-offset))) translateX(-5.6em) translateY(8.4em) rotateY(-180deg) rotateX(360deg) }
 
-    38.5% {
-        transform: translateZ(1.0em) translateX(-5.6em) translateY(8.4em) rotateY(-180deg) rotateX(450deg)
-    }
+    38.5% { transform: var(--mini-bias) translateZ(calc(1.0em + var(--mini-offset))) translateX(-5.6em) translateY(8.4em) rotateY(-180deg) rotateX(450deg) }
 
-    44% {
-        transform: translateZ(1.0em) translateX(-2.8em) translateY(8.4em) rotateY(-180deg) rotateZ(90deg) rotateX(450deg)
-    }
+    44% { transform: var(--mini-bias) translateZ(calc(1.0em + var(--mini-offset))) translateX(-2.8em) translateY(8.4em) rotateY(-180deg) rotateZ(90deg) rotateX(450deg) }
 
-    49.5% {
-        transform: translateZ(1.0em) translateX(0) translateY(8.4em) rotateY(-180deg) rotateZ(180deg) rotateX(450deg)
-    }
+    49.5% { transform: var(--mini-bias) translateZ(calc(1.0em + var(--mini-offset))) translateX(0) translateY(8.4em) rotateY(-180deg) rotateZ(180deg) rotateX(450deg) }
 
-    55% {
-        transform: translateZ(1.0em) translateX(2.8em) translateY(5.6em) rotateY(-180deg) rotateZ(270deg) rotateX(450deg)
-    }
+    55% { transform: var(--mini-bias) translateZ(calc(1.0em + var(--mini-offset))) translateX(2.8em) translateY(5.6em) rotateY(-180deg) rotateZ(270deg) rotateX(450deg) }
 
-    60.5% {
-        transform: translateZ(1.0em) translateX(2.8em) translateY(2.8em) rotateY(-180deg) rotateZ(360deg) rotateX(450deg)
-    }
+    60.5% { transform: var(--mini-bias) translateZ(calc(1.0em + var(--mini-offset))) translateX(2.8em) translateY(2.8em) rotateY(-180deg) rotateZ(360deg) rotateX(450deg) }
 
-    66% {
-        transform: translateZ(1.0em) translateX(2.4em) translateY(0) rotateY(-180deg) rotateZ(450deg) rotateX(450deg)
-    }
+    66% { transform: var(--mini-bias) translateZ(calc(1.0em + var(--mini-offset))) translateX(2.4em) translateY(0) rotateY(-180deg) rotateZ(450deg) rotateX(450deg) }
 
-    71.5% {
-        transform: translateZ(3.8em) translateX(2.4em) translateY(0) rotateY(-180deg) rotateZ(450deg) rotateX(360deg)
-    }
+    71.5% { transform: var(--mini-bias) translateZ(calc(3.8em + var(--mini-offset))) translateX(2.4em) translateY(0) rotateY(-180deg) rotateZ(450deg) rotateX(360deg) }
 
-    77% {
-        transform: translateZ(6.6em) translateX(2.4em) translateY(0) rotateY(-180deg) rotateZ(450deg) rotateX(270deg)
-    }
+    77% { transform: var(--mini-bias) translateZ(calc(6.6em + var(--mini-offset))) translateX(2.4em) translateY(0) rotateY(-180deg) rotateZ(450deg) rotateX(270deg) }
 
-    82.5% {
-        transform: translateZ(6.6em) translateX(2.4em) translateY(2.8em) rotateY(-180deg) rotateZ(360deg) rotateX(270deg)
-    }
+    82.5% { transform: var(--mini-bias) translateZ(calc(6.6em + var(--mini-offset))) translateX(2.4em) translateY(2.8em) rotateY(-180deg) rotateZ(360deg) rotateX(270deg) }
 
-    88% {
-        transform: translateZ(6.6em) translateX(2.4em) translateY(5.6em) rotateY(-180deg) rotateZ(270deg) rotateX(270deg)
-    }
+    88% { transform: var(--mini-bias) translateZ(calc(6.6em + var(--mini-offset))) translateX(2.4em) translateY(5.6em) rotateY(-180deg) rotateZ(270deg) rotateX(270deg) }
 
-    95% {
-        transform: translateZ(11.4em) translateX(0) translateY(5.6em) rotateY(180deg) rotateZ(270deg) rotateX(270deg)
-    }
+    95% { transform: var(--mini-bias) translateZ(calc(11.4em + var(--mini-offset))) translateX(0) translateY(5.6em) rotateY(180deg) rotateZ(270deg) rotateX(270deg) }
 
-    100% {
-        transform: translateZ(6.6em) translateX(0) translateY(5.6em) rotateY(180deg) rotateZ(270deg) rotateX(270deg)
-    }
+    100% { transform: var(--mini-bias) translateZ(calc(6.7em + var(--mini-offset))) translateX(0) translateY(5.6em) rotateY(180deg) rotateZ(270deg) rotateX(270deg); }
 }
 
 .cube.mini {
@@ -318,8 +317,7 @@ body {
     height: 2.4em;
     position: absolute;
     right: 0;
-    transform: translateZ(9.4em);
-    z-index: 3;
+    z-index: 1;
 }
 
 .cube.mini .face {
@@ -330,7 +328,9 @@ body {
     display: flex;
     flex-direction: column;
     background: #5B4AB9;
-    border: 2px solid #7262c9;
+    border: 0.1em solid #000000;
+    box-shadow: 0 0 0.2em #0d043b;
+    z-index: 1;
     /* Do not render the big face inner cover on mini cube */
 }
 
