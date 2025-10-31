@@ -1,91 +1,107 @@
 <!doctype html>
 <html lang="en">
+
 <head>
-	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width,initial-scale=1" />
-	<title>Portefolio — Prototype</title>
-	<meta name="description" content="Simple portfolio prototype with presentation, projects slider and contact footer." />
-	<link rel="stylesheet" href="styles.css">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Portefolio — Prototype</title>
+    <meta name="description"
+        content="Simple portfolio prototype with presentation, projects slider and contact footer." />
+    <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
-	<div class="wrap">
-		<header>
-			<h1>Portefolio</h1>
-			<nav aria-label="top">
-				<a href="/" style="color:var(--muted);text-decoration:none">Home</a>
-			</nav>
-		</header>
+    <div class="wrap">
+        <header>
+            <h1>Portefolio</h1>
+            <nav aria-label="top">
+                <a href="/" style="color:var(--muted);text-decoration:none">Home</a>
+            </nav>
+        </header>
 
-		<!-- 1) Presentation with picture -->
-		<section id="intro" class="intro" aria-labelledby="intro-title">
-			<div class="avatar" role="img" aria-label="Profile avatar">
-				<!-- simple SVG avatar -->
-				<svg width="72" height="72" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-					<rect width="72" height="72" rx="12" fill="white" fill-opacity="0.12"/>
-					<text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="28" fill="#042029">T</text>
-				</svg>
-			</div>
-			<div>
-				<h2 id="intro-title" style="margin:0 0 .5rem 0">Hi — I'm Tadeo</h2>
-				<p>
-					I'm a developer and creative tinkerer. This is a simple portfolio prototype showing a short presentation, a projects slider and a contact footer. It's intentionally minimal so we can iterate quickly.
-				</p>
-			</div>
-		</section>
+        <!-- 1) Presentation with picture -->
+        <section id="intro" class="intro" aria-labelledby="intro-title">
+            <div class="avatar" role="img" aria-label="Profile avatar">
+                <!-- simple SVG avatar -->
+                <svg width="72" height="72" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden="true">
+                    <rect width="72" height="72" rx="12" fill="white" fill-opacity="0.12" />
+                    <text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle"
+                        font-family="Arial, Helvetica, sans-serif" font-size="28" fill="#042029">T</text>
+                </svg>
+            </div>
+            <div>
+                <h2 id="intro-title" style="margin:0 0 .5rem 0">Hi — I'm Tadeo</h2>
+                <p>
+                    I'm a developer and creative tinkerer. This is a simple portfolio prototype showing a short
+                    presentation, a projects slider and a contact footer. It's intentionally minimal so we can iterate
+                    quickly.
+                </p>
+            </div>
+        </section>
 
-		<!-- 2) Cards slider -->
-		<section id="projects" class="projects" aria-labelledby="projects-title">
-			<div class="controls">
-				<h2 id="projects-title">Selected projects</h2>
-				<div>
-					<button class="nav-btn" id="prevBtn" aria-label="Previous projects">◀</button>
-					<button class="nav-btn" id="nextBtn" aria-label="Next projects">▶</button>
-				</div>
-			</div>
+        <!-- 2) Cards slider -->
+        <section id="slider" class="slider" aria-labelledby="slider-title">
+            <div class="section-header">
+                <h2 id="slider-title">Projects</h2>
+                <p style="color:var(--muted);margin:0">A few of my recent works</p>
+            </div>
+            <div class="wrapper">
+                <div class="carousel">
+                    <div class="card">
+                        <img src="../assets/gba-sp/GBA-SP-Game.png" alt="ant-man">
+                    </div>
 
-			<div class="slider">
-				<div class="viewport" id="viewport">
-					<article class="card">
-						<h3>Project Aurora</h3>
-						<p>A tiny game demo built with vanilla JS showcasing animation and audio. Includes responsive layout and keyboard controls.</p>
-						<a href="#">View project</a>
-					</article>
+                    <div class="card">
+                        <img src="../assets/gba-sp/GBA-SP-Game.png" alt="capitan-america">
+                    </div>
 
-					<article class="card">
-						<h3>Life of Tad</h3>
-						<p>A small interactive gallery and storytelling site. Focused on images, captions and playful transitions.</p>
-						<a href="#">View project</a>
-					</article>
+                    <div class="card">
+                        <img src="../assets/gba-sp/GBA-SP-Game.png" alt="dr-strange">
+                    </div>
 
-					<article class="card">
-						<h3>Arcade Mini</h3>
-						<p>Collection of tiny web arcade experiences — fast, fun, and optimized for low-latency input.</p>
-						<a href="#">View project</a>
-					</article>
+                    <div class="card">
+                        <img src="../assets/gba-sp/GBA-SP-Game.png" alt="hulk">
+                    </div>
 
-					<!-- extra sample card -->
-					<article class="card">
-						<h3>Tooling & Scripts</h3>
-						<p>Utilities and build helpers to automate tasks and speed up development workflows.</p>
-						<a href="#">View project</a>
-					</article>
-				</div>
-			</div>
-		</section>
+                    <div class="card">
+                        <img src="../assets/gba-sp/GBA-SP-Game.png" alt="iron-man">
+                    </div>
 
-		<!-- 3) Footer / Contact -->
-		<footer>
-			<div class="contact">
-				<div>
-					<strong>Contact</strong>
-					<div style="color:var(--muted)">Email: <a href="mailto:tadeo@example.com" style="color:var(--accent)">tadeo@example.com</a></div>
-				</div>
-				<div style="margin-left:auto;color:var(--muted)">Want to collaborate? Send a short note — I'll reply within a few days.</div>
-			</div>
-		</footer>
-	</div>
+                    <div class="card">
+                        <img src="../assets/gba-sp/GBA-SP-Game.png" alt="spiderman">
+                    </div>
 
-		<script src="scripts.js" defer></script>
+                    <div class="card">
+                        <img src="../assets/gba-sp/GBA-SP-Game.png" alt="storm">
+                    </div>
+
+                    <div class="card">
+                        <img src="../assets/gba-sp/GBA-SP-Game.png" alt="thor">
+                    </div>
+
+                    <div class="card">
+                        <img src="../assets/gba-sp/GBA-SP-Game.png" alt="wolverine">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3) Footer / Contact -->
+        <footer>
+            <div class="contact">
+                <div>
+                    <strong>Contact</strong>
+                    <div style="color:var(--muted)">Email: <a href="mailto:tadeo.amigo@gmail.com"
+                            style="color:var(--accent)">tadeo.amigo@gmail.com</a></div>
+                </div>
+                <div style="margin-left:auto;color:var(--muted)">Want to collaborate? Send a short note — I'll reply
+                    within a few days.</div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="scripts.js" defer></script>
 </body>
-</html>
 
+</html>

@@ -347,10 +347,3 @@ header h1 {
         }
     }
 }
-
-.wrapper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 20vh;
-}
