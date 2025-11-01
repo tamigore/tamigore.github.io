@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Projects</title>
+    <meta name="description"
+        content="Projects display on game covers." />
+    <link rel="stylesheet" href="styles.css">
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.158.0/build/three.module.js"
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <!-- 2.5) Three.js scene -->
+    <section id="three" class="three-section" aria-labelledby="three-title">
+        <h2 id="three-title" style="margin:0 0 .5rem 0">Interactive demo</h2>
+        <div id="three-container" class="three-container" aria-hidden="false">
+            <div class="three-loader" aria-hidden="false">
+                <div class="three-loader-inner">
+                    <div class="three-spinner" aria-hidden="true"></div>
+                    <div class="three-loader-text">Loading model <span class="three-loader-percent">0%</span></div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <script src="scripts.js" defer></script>
+    <script type="module" src="three-scene.js"></script>
+</body>
+
+</html>

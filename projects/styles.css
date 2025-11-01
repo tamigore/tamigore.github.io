@@ -347,3 +347,79 @@ header h1 {
         }
     }
 }
+
+/* Three.js demo styles */
+.three-section {
+    margin: 2rem 0;
+}
+
+
+/* --- three.js container (full height) --- */
+.three-container {
+    width: 100%;
+    /* fill the viewport while accounting for .wrap padding (2rem top + 2rem bottom) */
+    height: calc(100vh - 4rem);
+    min-height: 280px;
+    border-radius: 12px;
+    overflow: hidden;
+    background: transparent;
+    box-shadow: 0 6px 30px rgba(2,6,23,0.6);
+    position: relative;
+}
+
+.three-container canvas {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* Loader overlay */
+.three-loader {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: linear-gradient(180deg, rgba(2,6,23,0.45), rgba(2,6,23,0.6));
+    z-index: 5;
+    transition: opacity 220ms ease, visibility 220ms ease;
+}
+
+.three-loader.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.three-loader-inner {
+    display: flex;
+    gap: .75rem;
+    align-items: center;
+    padding: .75rem 1rem;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.04);
+    color: var(--muted);
+    font-size: .95rem;
+}
+
+.three-spinner {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.12);
+    border-top-color: var(--accent);
+    animation: three-spin 900ms linear infinite;
+}
+
+@keyframes three-spin {
+    to { transform: rotate(360deg); }
+}
+
+.three-loader-text {
+    white-space: nowrap;
+}
+
+.three-loader-percent {
+    color: var(--accent);
+    margin-left: .35rem;
+}
