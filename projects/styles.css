@@ -1,3 +1,11 @@
+@font-face {
+    font-family: 'Pixeloid Sans';
+    src: url('/assets/fonts/PixeloidSans-mLxMm.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
 :root {
     /* layout + grid vars consolidated */
     --grid-x: 0px;
@@ -95,17 +103,10 @@ html,
 body {
     height: 100%;
     margin: 0;
-    font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    font: 16px/1.6 'Pixeloid Sans', system-ui, Segoe UI, Roboto, Inter, Arial, sans-serif;
+    /* font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; */
     background: var(--bg);
     color: #e6eef8
-}
-
-.wrap {
-    max-width: var(--max-width);
-    margin: 0 auto;
-    padding: 2rem;
-    position: relative;
-    z-index: 1
 }
 
 header {
@@ -118,234 +119,6 @@ header {
 header h1 {
     font-size: 1.25rem;
     margin: 0
-}
-
-/* Intro */
-.intro {
-    display: flex;
-    gap: var(--gap);
-    align-items: center;
-    margin-bottom: 2rem;
-    flex-wrap: wrap
-}
-
-.avatar {
-    width: 128px;
-    height: 128px;
-    border-radius: 16px;
-    flex: 0 0 128px;
-    background: linear-gradient(135deg, #0ea5e9, #7c3aed);
-    display: grid;
-    place-items: center;
-    font-weight: 700;
-    color: #07203a
-}
-
-.intro p {
-    margin: 0;
-    font-size: 1rem;
-    line-height: 1.5;
-    color: var(--muted)
-}
-
-
-
-@import url(https://fonts.bunny.net/css?family=jura:300,500);
-
-@layer base, cards;
-
-@layer cards {
-    :root {
-        --carousel-duration: 30s;
-        --carousel-depth: 180px;
-        --card-width: 80px;
-        --card-height: 120px;
-
-        @media (width > 600px) {
-            --carousel-depth: 330px;
-            --card-width: 120px;
-            --card-height: 180px;
-        }
-    }
-
-    body {
-        perspective: 1000px;
-        overflow: hidden;
-    }
-
-    .carousel {
-        /* total number of elements */
-        --card-count: sibling-count();
-
-        /* fallback for browsers that don't support sibling-index*/
-        @supports not (order: sibling-index()) {
-            --card-count: 9;
-        }
-
-        transform-style: preserve-3d;
-        position: absolute;
-        inset: 0;
-        margin: auto;
-    }
-
-    @property --reflect-distance {
-        syntax: "<length>";
-        initial-value: 5px;
-        inherits: false;
-    }
-
-    .card {
-        /* get card index */
-        --i: sibling-index();
-
-        /* support for browsers that don't support sibling-index
-            you will need to create a fallback using nth-child
-        */
-        @supports not (order: sibling-index()) {
-            &:nth-child(1) {
-                --i: 1;
-            }
-
-            &:nth-child(2) {
-                --i: 2;
-            }
-
-            &:nth-child(3) {
-                --i: 3;
-            }
-
-            &:nth-child(4) {
-                --i: 4;
-            }
-
-            &:nth-child(5) {
-                --i: 5;
-            }
-
-            &:nth-child(6) {
-                --i: 6;
-            }
-
-            &:nth-child(7) {
-                --i: 7;
-            }
-
-            &:nth-child(8) {
-                --i: 8;
-            }
-
-            &:nth-child(9) {
-                --i: 9;
-            }
-
-            &:nth-child(10) {
-                --i: 10;
-            }
-        }
-
-        --angle: calc((360deg / var(--card-count)) * var(--i));
-        --delay: calc((-1 * var(--carousel-duration) / var(--card-count)) * var(--i));
-
-        --hover-duration: 300ms;
-        --hover-easing: linear(0, 0.708 15.2%, 0.927 23.6%, 1.067 33%, 1.12 41%, 1.13 50.2%, 1.019 83.2%, 1);
-
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: var(--card-width);
-        height: var(--card-height);
-        transform-style: preserve-3d;
-        transform: translate(-50%, -50%) rotateY(var(--angle)) translateZ(var(--carousel-depth));
-        opacity: 1;
-        scale: 1;
-        display: grid;
-        place-content: end;
-        perspective: 500px;
-
-        animation-name: orbit-x;
-        animation-duration: var(--carousel-duration);
-        animation-timing-function: linear;
-        animation-iteration-count: infinite;
-        animation-delay: var(--delay);
-
-        transition: var(--hover-duration) var(--hover-easing) var(--hover-duration);
-
-        /*  reflection */
-        -webkit-box-reflect: below var(--reflect-distance) linear-gradient(to top, rgba(0 0 0 / .15) 25%, transparent);
-
-        &:hover {
-
-            &>img {
-                scale: 1.2;
-            }
-        }
-
-        &>img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: scale var(--hover-duration) var(--hover-easing);
-        }
-
-        &::after {
-            content: attr(data-title);
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            color: white;
-            font-size: .7rem;
-            text-wrap: nowrap;
-            opacity: 0;
-            translate: 0 50px;
-            padding: .25em .75em;
-            background: rgba(255 255 255 / .15);
-            border: 1px solid rgba(255 255 255 / .5);
-
-            animation-name: orbit-x-labels;
-            animation-duration: var(--carousel-duration);
-            animation-timing-function: linear;
-            animation-iteration-count: infinite;
-            animation-delay: var(--delay);
-        }
-
-    }
-
-    /* rotation - horizontal */
-    @keyframes orbit-x {
-        0% {
-            transform: translate(-50%, -50%) rotateY(0deg) translateZ(var(--carousel-depth));
-            opacity: 1;
-            scale: 1;
-        }
-        25%,
-        75% {
-            opacity: 0.75;
-            scale: 0.85;
-        }
-        50% {
-            opacity: 0.4;
-            scale: 0.75;
-        }
-        100% {
-            transform: translate(-50%, -50%) rotateY(360deg) translateZ(var(--carousel-depth));
-            opacity: 1;
-            scale: 1;
-        }
-    }
-
-    @keyframes orbit-x-labels {
-        25%,
-        75% {
-            opacity: 0;
-            translate: 0 20px;
-        }
-        100%,
-        0% {
-            opacity: 1;
-            translate: 0 0;
-        }
-    }
 }
 
 /* Three.js demo styles */

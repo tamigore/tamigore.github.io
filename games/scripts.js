@@ -3,9 +3,6 @@
     // Grid background interaction — attach to the whole body so the effect covers the entire page
     const area = document.body;
     if (area) {
-        let lastMove = 0;
-        const throttle = 16; // ms
-
         function enter() { area.classList.add('grid-hover'); }
         function leave() { area.classList.remove('grid-hover'); area.style.removeProperty('--mouse-x'); area.style.removeProperty('--mouse-y'); area.style.removeProperty('--mouse-x-px'); area.style.removeProperty('--mouse-y-px'); }
 

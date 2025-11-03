@@ -5,39 +5,147 @@
     /* Device proportions based on source artwork */
     --device-aspect: calc(1200/1400);
     /* Screen window relative to the device image bounds (percentages) */
-    --screen-left: 16.6667%;
-    --screen-top: 12.1429%;
-    --screen-width: 66.6667%;
-    --screen-height: 35.7143%;
-    /* Hotspots (percentages) tuned to approx button positions */
-    --dpad-left: 17.5%;
-    --dpad-top: 68%;
-    --dpad-size: 10%;
-    --ab-left: 70%;
-    --ab-top: 66%;
+    --screen-left: 18%;
+    --screen-top: 9.8%;
+    --screen-width: 64.2%;
+    --screen-height: 34.2%;
+    /* Button positions */
+    --dpad-left: 28%;
+    --dpad-top: 73%;
+    --dpad-width: 19%;
+    --dpad-height: 7.5%;
+    --ab-left: 71.5%;
+    --ab-top: 72.5%;
     --ab-gap: 6%;
-    --ab-size: 6.5%;
-    --start-left: 46.5%;
-    --start-top: 76.5%;
+    --ab-width: 7.5%;
+    --ab-height: 3.5%;
+    --a-left: 60%;
+    --a-top: 0%;
+    --a-width: 40%;
+    --a-height: 75.5%;
+    --b-left: 0%;
+    --b-top: 20.5%;
+    --b-width: 40%;
+    --b-height: 75.5%;
+    --start-left: 59%;
+    --start-top: 84.5%;
     --start-width: 7%;
-    --start-height: 2.5%;
-    --select-left: 39%;
-    --select-top: 76.5%;
+    --start-height: 3%;
+    --select-left: 41.5%;
+    --select-top: 84.5%;
     --select-width: 7%;
-    --select-height: 2.5%;
+    --select-height: 3%;
+
+    /* layout + grid vars consolidated */
+    --grid-x: 0px;
+    --grid-y: 0px;
+    --mouse-x: 50%;
+    --mouse-y: 50%;
+    --mouse-x-px: 50vw;
+    --mouse-y-px: 50vh;
+    --bg: #0f1724;
+    --muted: #9ca3af;
+    --accent: #7326bb;
+    --gap: 1rem;
+    --max-width: 1000px;
+    color-scheme: dark;
 }
 
-* {
-    box-sizing: border-box
+@font-face {
+    font-family: 'Pixeloid Sans';
+    src: url('/assets/fonts/PixeloidSans-mLxMm.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* Grid background — discrete, subtle lines that pulse on hover */
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    /* place above the plain body background but behind page content (wrap has z-index:1) */
+    z-index: 0;
+    /* two perpendicular thin lines to create a grid */
+    background-image:
+        linear-gradient(rgba(80, 255, 120, 0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(80, 255, 120, 0.06) 1px, transparent 1px);
+    background-size: 32px 32px;
+    /* allow small follow effect (POSITION only) */
+    background-position: var(--grid-x, 0px) var(--grid-y, 0px);
+    opacity: .55;
+    /* avoid transforming the grid itself; pulse will only affect brightness/opacity */
+    transform: none;
+    transform-origin: center;
+    transition: opacity 280ms ease, filter 280ms ease, background-position 120ms linear;
+    mix-blend-mode: normal;
+    filter: drop-shadow(0 0 2px rgba(80, 255, 120, 0.02));
+    will-change: opacity, filter, background-position;
+}
+
+/* Focused glow: a radial highlight centered on the mouse location. This is separate from the grid lines
+	 so the pulse can be localized while the grid itself remains static. It sits above the grid (before)
+	 but below page content (wrap has z-index:1). */
+/* Localized stronger grid layer: sits above the faint grid (::before) but below content.
+	 It's masked with a radial gradient centered on the mouse so only the area near the cursor
+	 shows the stronger grid (this is what 'lights' the grid). */
+body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    /* stronger grid lines (higher alpha) */
+    background-image:
+        linear-gradient(rgba(80, 255, 120, 0.18) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(80, 255, 120, 0.18) 1px, transparent 1px);
+    background-size: 32px 32px;
+    background-position: var(--grid-x, 0px) var(--grid-y, 0px);
+    opacity: 0;
+    transition: opacity 220ms ease, filter 220ms ease;
+    will-change: opacity, filter, background-position;
+    /* mask the strong grid with a radial fade centered on the mouse */
+    /* prefer pixel-based coords for exact cursor alignment, fall back to percent */
+    -webkit-mask-image: radial-gradient(circle at var(--mouse-x-px, var(--mouse-x)) var(--mouse-y-px, var(--mouse-y)), rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.6) 8%, rgba(0, 0, 0, 0) 30%);
+    mask-image: radial-gradient(circle at var(--mouse-x-px, var(--mouse-x)) var(--mouse-y-px, var(--mouse-y)), rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.6) 8%, rgba(0, 0, 0, 0) 30%);
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+}
+
+body.grid-hover::after {
+    opacity: 1;
+    animation: grid-glow 1000ms ease-in-out infinite;
+}
+
+@keyframes grid-glow {
+    0% {
+        opacity: .72;
+        filter: drop-shadow(0 0 4px rgba(80, 255, 120, 0.06));
+    }
+
+    50% {
+        opacity: 1;
+        filter: drop-shadow(0 0 20px rgba(80, 255, 120, 0.18));
+    }
+
+    100% {
+        opacity: .72;
+        filter: drop-shadow(0 0 4px rgba(80, 255, 120, 0.06));
+    }
 }
 
 html,
 body {
     height: 100%;
     margin: 0;
+    font: 16px/1.6 'Pixeloid Sans', system-ui, Segoe UI, Roboto, Inter, Arial, sans-serif;
     background: var(--bg);
-    color: var(--text);
-    font: 16px/1.6 system-ui, Segoe UI, Roboto, Inter, Arial, sans-serif
+    color: #e6eef8
+}
+
+* {
+    box-sizing: border-box
 }
 
 .sr-only {
@@ -78,11 +186,6 @@ body {
     top: var(--screen-top);
     width: var(--screen-width);
     height: var(--screen-height);
-    border-radius: 12px;
-    overflow: hidden;
-    border: 1px solid #33394a;
-    background: #0a0b0d;
-    display: grid
 }
 
 .screen::before {
@@ -100,92 +203,264 @@ body {
     background: #000
 }
 
-/* Invisible hotspots mapped to device controls */
-.hot {
+/* D-pad area (subdivided into 4 child buttons). Make the container absolute so
+   percentage coords (from :root) are relative to the `.device-wrap` element. */
+.dpad {
     position: absolute;
+    left: var(--dpad-left);
+    top: var(--dpad-top);
+    width: var(--dpad-width);
+    height: var(--dpad-height);
+    transform: translate(-50%, -50%);
+    /* ensure child buttons are positioned inside the container */
+}
+
+/* child buttons inside .dpad (buttons in your HTML are direct children) */
+.dpad > button {
+    position: absolute; /* use absolute so left/top/bottom/right are relative to .dpad */
     background: transparent;
     border: none;
     padding: 0;
     margin: 0;
-    cursor: pointer
+    cursor: pointer;
 }
 
-.hot:focus-visible {
-    outline: 2px solid #51d1b6;
-    outline-offset: 2px
-}
-
-/* D-pad area (we subdivide with 4 child buttons) */
-.dpad {
-    left: var(--dpad-left);
-    top: var(--dpad-top);
-    width: var(--dpad-size);
-    height: var(--dpad-size)
-}
-
-.dpad .hot {
-    position: absolute
-}
-
-.dpad .left {
+.dpad > .left {
     left: 0;
-    top: 35%;
-    width: 35%;
-    height: 30%
+    top: 50%;
+    width: 38%;
+    height: 40%;
+    transform: translateY(-50%);
 }
 
-.dpad .right {
-    right: 0;
-    top: 35%;
-    width: 35%;
-    height: 30%
+.dpad > .right {
+    left: 62%;
+    right: 0%;
+    top: 50%;
+    width: 38%;
+    height: 40%;
+    transform: translateY(-50%);
 }
 
-.dpad .up {
-    left: 35%;
+.dpad > .up {
+    left: 50%;
     top: 0;
-    width: 30%;
-    height: 35%
+    width: 40%;
+    height: 38%;
+    transform: translateX(-50%);
 }
 
-.dpad .down {
-    left: 35%;
-    bottom: 0;
-    width: 30%;
-    height: 35%
+.dpad > .down {
+    left: 50%;
+    top: 60%;
+    bottom: 0%;
+    width: 40%;
+    height: 38%;
+    transform: translateX(-50%);
 }
 
-/* A/B buttons (two circles area) */
+/* A/B buttons area. Make it absolute and place two circular buttons inside. */
 .ab {
+    position: absolute;
     left: var(--ab-left);
     top: var(--ab-top);
-    width: calc(var(--ab-size) * 3);
-    height: calc(var(--ab-size) * 1.5);
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--ab-gap)
+    width: calc(var(--ab-width) * 3);
+    height: calc(var(--ab-height) * 1.5);
+    transform: translate(-50%, -50%);
+    align-items: center;
+    justify-items: center;
 }
 
-.ab .hot {
-    width: var(--ab-size);
-    height: var(--ab-size);
-    border-radius: 999px;
-    place-self: center
+/* child buttons inside .dpad (buttons in your HTML are direct children) */
+.ab > button {
+    position: absolute; /* use absolute so left/top/bottom/right are relative to .dpad */
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+}
+
+/* buttons inside .ab (your markup uses button elements with classes 'a' and 'b') */
+.ab > .a {
+    left: var(--a-left);
+    top: var(--a-top);
+    width: var(--a-width);
+    height: var(--a-height);
+    cursor: pointer;
+}
+
+.ab > .b {
+    left: var(--b-left);
+    top: var(--b-top);
+    width: var(--b-width);
+    height: var(--b-height);
+    cursor: pointer;
 }
 
 /* Start / Select */
 .start {
+    position: absolute;
     left: var(--start-left);
     top: var(--start-top);
     width: var(--start-width);
     height: var(--start-height);
-    border-radius: 6px
+    transform: translate(-50%, -50%);
+    border-radius: 6px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
 }
 
 .select {
+    position: absolute;
     left: var(--select-left);
     top: var(--select-top);
     width: var(--select-width);
     height: var(--select-height);
-    border-radius: 6px
+    transform: translate(-50%, -50%);
+    border-radius: 6px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+.ontop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    user-select: none;
+    pointer-events: none;
+    z-index: 2;
+}
+
+/* Debug outlines for hotspots (toggle by adding .hot-debug to body) */
+.hot-debug .dpad > button,
+.hot-debug .ab > button,
+.hot-debug .start,
+.hot-debug .select {
+    outline: 2px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.03);
+}
+
+/* Burger menu (top-left) */
+.burger {
+    position: fixed;
+    left: 12px;
+    top: 12px;
+    width: 40px;
+    height: 36px;
+    display: grid;
+    place-items: center;
+    z-index: 9998;
+}
+.burger button {
+    width: 36px;
+    height: 32px;
+    border-radius: 6px;
+    border: none;
+    background: rgba(0,0,0,0.45);
+    color: white;
+    display: inline-grid;
+    place-items: center;
+    cursor: pointer;
+    padding: 6px;
+}
+.burger button:focus { outline: 2px solid var(--accent); }
+.burger .icon {
+    width: 18px;
+    height: 12px;
+    position: relative;
+}
+.burger .icon::before,
+.burger .icon::after,
+.burger .icon span {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #dbeafe;
+    border-radius: 2px;
+}
+.burger .icon span { top: 5px; }
+.burger .icon::before { top: 0; }
+.burger .icon::after { bottom: 0; }
+
+/* Menu panel */
+.menu-panel {
+    position: fixed;
+    left: 12px;
+    top: 56px;
+    min-width: 180px;
+    background: rgba(10, 12, 16, 0.96);
+    border: 1px solid rgba(255,255,255,0.04);
+    box-shadow: 0 8px 30px rgba(2,6,23,0.6);
+    border-radius: 10px;
+    padding: 8px;
+    display: none;
+    flex-direction: column;
+    gap: 6px;
+    z-index: 9998;
+}
+.menu-panel.show { display: flex; }
+.menu-panel button {
+    background: transparent;
+    border: 0;
+    color: var(--text);
+    text-align: left;
+    padding: 8px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+.menu-panel button:hover { background: rgba(255,255,255,0.02); }
+.menu-panel .title { font-weight: 600; font-size: 13px; padding: 6px 8px; color: var(--muted); }
+
+/* Ensure the burger/menu use the same font as the page.
+   Buttons (especially) can use browser-default fonts unless we force inheritance. */
+.burger, .menu-panel, .burger button, .menu-panel button, .hot-label {
+    font: inherit;
+    font-family: inherit;
+}
+
+/* Home button (top-right) */
+.home-btn {
+    position: fixed;
+    right: 12px;
+    top: 12px;
+    width: 40px;
+    height: 36px;
+    display: grid;
+    place-items: center;
+    z-index: 9998;
+}
+.home-btn button {
+    width: 36px;
+    height: 32px;
+    border-radius: 6px;
+    border: none;
+    background: rgba(0,0,0,0.45);
+    color: white;
+    display: inline-grid;
+    place-items: center;
+    cursor: pointer;
+    padding: 6px;
+}
+.home-btn button:focus { outline: 2px solid var(--accent); }
+.home-btn .icon {
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+}
+.home-btn .icon::before {
+    content: "";
+    display: block;
+    width: 100%;
+    height: 100%;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%23dbeafe' d='M12 3l9 8h-3v7h-12v-7h-3z'/></svg>");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
 }

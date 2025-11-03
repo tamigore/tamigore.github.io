@@ -122,9 +122,28 @@ if (!container) {
           const wrapper = new THREE.Group();
           // center the instance inside the wrapper (preserve internal transforms by moving instance)
           instance.position.sub(originalCenter);
+          // Before adding to the scene, clone materials per instance so we can tweak them
+          // independently per tile.
+          instance.traverse((node) => {
+            if (node.isMesh) {
+              const mat = node.material;
+              if (Array.isArray(mat)) {
+                node.material = mat.map((m) => (m ? m.clone() : new THREE.MeshStandardMaterial()));
+              } else {
+                node.material = mat ? mat.clone() : new THREE.MeshStandardMaterial();
+              }
+              // ensure encoding for color maps
+              const nodeMatArray = Array.isArray(node.material) ? node.material : [node.material];
+              nodeMatArray.forEach((nm) => {
+                if (nm.map) nm.map.encoding = THREE.sRGBEncoding;
+                nm.needsUpdate = true;
+              });
+            }
+          });
+
           wrapper.add(instance);
           scene.add(wrapper);
-          wrappers.push({ wrapper, instance });
+          wrappers.push({ wrapper, instance, i, j });
         }
       }
 
@@ -189,6 +208,31 @@ if (!container) {
             wrapper.userData.isGridWrapper = true;
             // ensure no stale toggle state remains (we use hover to control flip)
             wrapper.userData.toggled = false;
+              // apply per-instance material tweaks: clone materials were created at load time,
+              // now tweak color/metalness/roughness per tile
+              (function applyInstanceMaterialVariants(entryIndex, ii, jj) {
+                const hue = ((ii + jj * horizontalNb) / (horizontalNb * verticalNb));
+                const sat = 0.55;
+                const light = 0.5;
+                const metalness = 0.1 + 0.7 * ((ii + jj * horizontalNb) / (horizontalNb * verticalNb - 1 || 1));
+                const roughness = 0.35 + 0.5 * (1 - ((ii + jj * horizontalNb) / (horizontalNb * verticalNb - 1 || 1)));
+                entry.instance.traverse((n) => {
+                  if (n.isMesh) {
+                    const mats = Array.isArray(n.material) ? n.material : [n.material];
+                    mats.forEach((m) => {
+                      if (!m) return;
+                      // only set color if material supports it
+                      if (m.color && typeof m.color.setHSL === 'function') {
+                        m.color.setHSL(hue, sat, light);
+                      }
+                      // tweak metalness/roughness
+                      if (typeof m.metalness === 'number') m.metalness = metalness;
+                      if (typeof m.roughness === 'number') m.roughness = roughness;
+                      m.needsUpdate = true;
+                    });
+                  }
+                });
+              })(idx - 1, i, j);
           }
         }
 

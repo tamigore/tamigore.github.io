@@ -1,7 +1,7 @@
 // Reveal squares as the mini cube passes and redirect afterward
 (function () {
     // Boot sound: try to play on load; if blocked, retry on first interaction
-    const audioSrc = '/assets/loading/music/gamecube-startup-fx.wav';
+    const audioSrc = '/assets/music/gamecube-startup-fx.wav';
     let bootPlayed = false;
     let audioEl = null;
     function ensureAudioEl() {

@@ -25,27 +25,32 @@
     <p class="sr-only" id="help">Use Left/Right on the D‑pad or keyboard to switch games. Press A or Enter to load.
       Start toggles fullscreen; Select cycles selection style.</p>
     <div class="device-wrap" aria-describedby="help">
-      <img class="device" src="/assets/life-of-tad/device/gba-sp.png" alt="Game Boy Advance SP" />
+      <img class="device" src="/assets/gba-sp/GBA-SP.svg" alt="Game Boy Advance SP" />
+      <img class="device ontop" src="/assets/gba-sp/GBA-SP-Joystick-Neutral.svg" alt="Game Boy Advance SP joystick" />
+      <img class="device ontop" src="/assets/gba-sp/GBA-SP-A.svg" alt="Game Boy Advance SP A button" />
+      <img class="device ontop" src="/assets/gba-sp/GBA-SP-B.svg" alt="Game Boy Advance SP B button" />
+      <img class="device ontop" src="/assets/gba-sp/GBA-SP-Select.svg" alt="Game Boy Advance SP Select button" />
+      <img class="device ontop" src="/assets/gba-sp/GBA-SP-Start.svg" alt="Game Boy Advance SP Start button" />
       <div class="screen">
         <iframe id="screenFrame" title="Game view" src="about:blank"></iframe>
       </div>
-      <!-- Hotspots mapped to device controls -->
       <div class="dpad" aria-label="D-pad">
-        <button class="hot left" aria-label="Previous game"></button>
-        <button class="hot right" aria-label="Next game"></button>
-        <button class="hot up" aria-label="Previous game"></button>
-        <button class="hot down" aria-label="Next game"></button>
+        <button class="left" aria-label="Left"></button>
+        <button class="right" aria-label="Right"></button>
+        <button class="up" aria-label="Up"></button>
+        <button class="down" aria-label="Down"></button>
       </div>
       <div class="ab" aria-label="A and B buttons">
-        <button class="hot a" aria-label="Load selected game"></button>
-        <button class="hot b" aria-label="Back"></button>
+        <button class="a" aria-label="A"></button>
+        <button class="b" aria-label="B"></button>
       </div>
-      <button class="hot start" aria-label="Toggle fullscreen"></button>
-      <button class="hot select" aria-label="Change selection"></button>
+      <button class="start" aria-label="Start"></button>
+      <button class="select" aria-label="Select"></button>
     </div>
   </div>
 
   <script src="/games/arcade.js" defer></script>
+  <!-- <script src="/games/scripts.js" defer></script> -->
 </body>
 
 </html>
