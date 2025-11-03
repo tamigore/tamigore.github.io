@@ -48,12 +48,9 @@ body::before {
     will-change: opacity, filter, background-position;
 }
 
-/* Focused glow: a radial highlight centered on the mouse location. This is separate from the grid lines
-	 so the pulse can be localized while the grid itself remains static. It sits above the grid (before)
-	 but below page content (wrap has z-index:1). */
 /* Localized stronger grid layer: sits above the faint grid (::before) but below content.
-	 It's masked with a radial gradient centered on the mouse so only the area near the cursor
-	 shows the stronger grid (this is what 'lights' the grid). */
+   It's masked with a radial gradient centered on the mouse so only the area near the cursor
+   shows the stronger grid (this is what 'lights' the grid). */
 body::after {
     content: "";
     position: fixed;
@@ -70,7 +67,6 @@ body::after {
     transition: opacity 220ms ease, filter 220ms ease;
     will-change: opacity, filter, background-position;
     /* mask the strong grid with a radial fade centered on the mouse */
-    /* prefer pixel-based coords for exact cursor alignment, fall back to percent */
     -webkit-mask-image: radial-gradient(circle at var(--mouse-x-px, var(--mouse-x)) var(--mouse-y-px, var(--mouse-y)), rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.6) 8%, rgba(0, 0, 0, 0) 30%);
     mask-image: radial-gradient(circle at var(--mouse-x-px, var(--mouse-x)) var(--mouse-y-px, var(--mouse-y)), rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.6) 8%, rgba(0, 0, 0, 0) 30%);
     -webkit-mask-repeat: no-repeat;
@@ -104,96 +100,6 @@ body {
     height: 100%;
     margin: 0;
     font: 16px/1.6 'Pixeloid Sans', system-ui, Segoe UI, Roboto, Inter, Arial, sans-serif;
-    /* font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; */
     background: var(--bg);
-    color: #e6eef8
-}
-
-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 1.5rem
-}
-
-header h1 {
-    font-size: 1.25rem;
-    margin: 0
-}
-
-/* Three.js demo styles */
-.three-section {
-    margin: 2rem 0;
-}
-
-
-/* --- three.js container (full height) --- */
-.three-container {
-    width: 100%;
-    /* fill the viewport while accounting for .wrap padding (2rem top + 2rem bottom) */
-    height: calc(100vh - 4rem);
-    min-height: 280px;
-    border-radius: 12px;
-    overflow: hidden;
-    background: transparent;
-    box-shadow: 0 6px 30px rgba(2,6,23,0.6);
-    position: relative;
-    z-index: 1; /* keep 3D canvas above the body pseudo-elements (grid/pulse) */
-}
-
-.three-container canvas {
-    display: block;
-    width: 100% !important;
-    height: 100% !important;
-}
-
-/* Loader overlay */
-.three-loader {
-    position: absolute;
-    inset: 0;
-    display: grid;
-    place-items: center;
-    background: linear-gradient(180deg, rgba(2,6,23,0.45), rgba(2,6,23,0.6));
-    z-index: 5;
-    transition: opacity 220ms ease, visibility 220ms ease;
-}
-
-.three-loader.hidden {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-}
-
-.three-loader-inner {
-    display: flex;
-    gap: .75rem;
-    align-items: center;
-    padding: .75rem 1rem;
-    border-radius: 999px;
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.04);
-    color: var(--muted);
-    font-size: .95rem;
-}
-
-.three-spinner {
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    border: 2px solid rgba(255,255,255,0.12);
-    border-top-color: var(--accent);
-    animation: three-spin 900ms linear infinite;
-}
-
-@keyframes three-spin {
-    to { transform: rotate(360deg); }
-}
-
-.three-loader-text {
-    white-space: nowrap;
-}
-
-.three-loader-percent {
-    color: var(--accent);
-    margin-left: .35rem;
+    color: #e6eef8;
 }

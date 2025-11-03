@@ -49,15 +49,14 @@
 
     // Sync sound with the drop start if it hasn't played yet
     mini.addEventListener('animationstart', (e) => {
-        if (e.animationName === 'preDrop') {
+        if (e.animationName === 'preDrop')
             tryPlayBoot();
-        }
     });
 
     // When the main path ends (cubeMini), navigate after a short beat
     mini.addEventListener('animationend', (e) => {
         if (e.animationName !== 'cubeMini') return;
         if (caption) caption.textContent = 'Play';
-        setTimeout(() => { window.location.replace(target); }, 500);
+        setTimeout(() => { window.location.replace(target); }, 1000);
     });
 })();

@@ -111,6 +111,150 @@ if (!container) {
         }
       });
 
+      // Diagnostic: dump model structure (meshes + materials) to console to aid targeting
+      function dumpModelStructure(root) {
+        try {
+          console.groupCollapsed('three-scene: model structure dump');
+          root.traverse((node) => {
+            if (!node.isMesh) return;
+            const mats = Array.isArray(node.material) ? node.material : [node.material];
+            mats.forEach((m, idx) => {
+              const matName = (m && m.name) ? m.name : '[unnamed]';
+              const hasMap = !!(m && m.map);
+              let colorInfo = 'n/a';
+              try {
+                if (m && m.color && typeof m.color.getHex === 'function') {
+                  colorInfo = '#' + m.color.getHexString?.() || m.color.getHex?.().toString(16);
+                }
+              } catch (e) { /* ignore */ }
+              const metalness = (m && typeof m.metalness === 'number') ? m.metalness : 'n/a';
+              const roughness = (m && typeof m.roughness === 'number') ? m.roughness : 'n/a';
+              console.log(`mesh:"${node.name || '[unnamed]'}" materialIndex:${idx} material:"${matName}" hasMap:${hasMap} color:${colorInfo} metalness:${metalness} roughness:${roughness}`, node);
+            });
+          });
+          console.groupEnd();
+        } catch (err) {
+          console.warn('three-scene: failed to dump model structure', err);
+        }
+      }
+
+      // call the diagnostic dump so you can inspect meshes/materials in the console
+      dumpModelStructure(source);
+
+      // --- per-instance texture support (template) ---
+      // textureLoader will load image textures and we apply them to each instance
+      const textureLoader = new THREE.TextureLoader();
+
+      // Allow passing a comma-separated list of image URLs via the container's
+      // `data-images` attribute (e.g. data-images="url1,url2,..."). If not provided
+      // fall back to placeholder images from picsum.photos so the template works out of the box.
+      const instanceImages = (container.dataset.images ? container.dataset.images.split(',').map(s => s.trim()).filter(Boolean) : [])
+        .filter(Boolean);
+      if (instanceImages.length === 0) {
+        // generate 9 placeholder images (one per grid cell)
+        for (let k = 0; k < 9; k++) instanceImages.push(`https://picsum.photos/seed/three${k}/512/512`);
+      }
+
+      // helper: apply a loaded texture to an instance's materials
+      // optional opts: { node: THREE.Mesh, materialIndex: number }
+      function applyTextureToInstance(instance, texture, opts = {}) {
+        // ensure correct color space
+        texture.encoding = THREE.sRGBEncoding;
+        texture.needsUpdate = true;
+        // configure sampling / wrapping for nicer results
+        texture.wrapS = texture.wrapT = THREE.ClampToEdgeWrapping;
+        try {
+          texture.anisotropy = renderer.capabilities && renderer.capabilities.getMaxAnisotropy ? renderer.capabilities.getMaxAnisotropy() : 1;
+        } catch (e) {
+          // ignore
+        }
+
+        if (opts.node) {
+          const n = opts.node;
+          if (n.isMesh) {
+            const mats = Array.isArray(n.material) ? n.material : [n.material];
+            const mi = Number.isFinite(opts.materialIndex) ? opts.materialIndex : 0;
+            const m = mats[mi];
+            if (m) {
+              m.map = texture;
+              if (m.color) m.color.setHex(0xffffff);
+              if (m.emissive) m.emissive.setScalar(0.08);
+              m.needsUpdate = true;
+            }
+          }
+          return;
+        }
+
+        // fallback: apply to first material of every mesh (previous behaviour)
+        instance.traverse((n) => {
+          if (n.isMesh) {
+            const mats = Array.isArray(n.material) ? n.material : [n.material];
+            if (mats[0]) {
+              mats[0].map = texture;
+              if (mats[0].color) mats[0].color.setHex(0xffffff);
+              if (mats[0].emissive) mats[0].emissive.setScalar(0.08);
+              mats[0].needsUpdate = true;
+            }
+          }
+        });
+      }
+
+      // helper: try to heuristically find the mesh that corresponds to the orange panel
+      function findCandidateMeshesForImage(instance) {
+        const candidates = [];
+        const nameRegex = /(screen|label|panel|cover|face|front|display|insert|slot|card|logo|box|plate|window)/i;
+        instance.traverse((n) => {
+          if (!n.isMesh) return;
+          // prefer explicit names
+          if (n.name && nameRegex.test(n.name)) {
+            candidates.push(n);
+            return;
+          }
+          // check material color for orange/brown hues
+          const mats = Array.isArray(n.material) ? n.material : [n.material];
+          for (let m of mats) {
+            if (!m) continue;
+            if (m.map) {
+              // already textured — good candidate
+              candidates.push(n);
+              break;
+            }
+            if (m.color && typeof m.color.getHSL === 'function') {
+              const hsl = {};
+              m.color.getHSL(hsl);
+              // orange hue approx between 0.03 and 0.12, require some saturation
+              if (hsl.h >= 0.02 && hsl.h <= 0.14 && hsl.s > 0.2 && hsl.l > 0.08) {
+                candidates.push(n);
+                break;
+              }
+            }
+          }
+        });
+        return candidates;
+      }
+
+      // helper: async load then apply (with heuristic targeting)
+      function applyImageUrlToInstance(instance, url) {
+        if (!url) return;
+        textureLoader.load(
+          url,
+          (tex) => {
+            // try to find a good target mesh/material on the instance
+            const targets = findCandidateMeshesForImage(instance);
+            if (targets.length) {
+              // apply to each candidate's first material
+              targets.forEach((node) => applyTextureToInstance(instance, tex, { node }));
+            } else {
+              // fallback to applying broadly
+              console.info('three-scene: no clear target mesh found, applying texture broadly');
+              applyTextureToInstance(instance, tex);
+            }
+          },
+          undefined,
+          (err) => console.warn('three-scene: failed to load instance texture', url, err)
+        );
+      }
+
       // create 3x3 clones, wrap them in groups and add to scene
       for (let j = 0; j < 3; j++) {
         for (let i = 0; i < 3; i++) {
@@ -143,6 +287,14 @@ if (!container) {
 
           wrapper.add(instance);
           scene.add(wrapper);
+          // apply a per-instance image texture from the template list
+          try {
+            const imgUrl = instanceImages[(j * 3 + i) % instanceImages.length];
+            if (imgUrl) applyImageUrlToInstance(instance, imgUrl);
+          } catch (err) {
+            console.warn('three-scene: failed to apply instance image', err);
+          }
+
           wrappers.push({ wrapper, instance, i, j });
         }
       }
@@ -219,17 +371,24 @@ if (!container) {
                 entry.instance.traverse((n) => {
                   if (n.isMesh) {
                     const mats = Array.isArray(n.material) ? n.material : [n.material];
-                    mats.forEach((m) => {
-                      if (!m) return;
-                      // only set color if material supports it
-                      if (m.color && typeof m.color.setHSL === 'function') {
-                        m.color.setHSL(hue, sat, light);
-                      }
-                      // tweak metalness/roughness
-                      if (typeof m.metalness === 'number') m.metalness = metalness;
-                      if (typeof m.roughness === 'number') m.roughness = roughness;
-                      m.needsUpdate = true;
-                    });
+                        mats.forEach((m) => {
+                          if (!m) return;
+                          // If this material already has a texture map applied, skip tinting it.
+                          // That lets image textures applied earlier remain visible instead of being
+                          // multiplied by the per-instance color.
+                          if (m.map) {
+                            m.needsUpdate = true;
+                            return;
+                          }
+                          // only set color if material supports it
+                          if (m.color && typeof m.color.setHSL === 'function') {
+                            m.color.setHSL(hue, sat, light);
+                          }
+                          // tweak metalness/roughness
+                          if (typeof m.metalness === 'number') m.metalness = metalness;
+                          if (typeof m.roughness === 'number') m.roughness = roughness;
+                          m.needsUpdate = true;
+                        });
                   }
                 });
               })(idx - 1, i, j);
