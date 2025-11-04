@@ -58,10 +58,7 @@ body::after {
     pointer-events: none;
     z-index: 0;
     /* stronger grid lines (higher alpha) */
-    background-image:
-        linear-gradient(rgba(80, 255, 120, 0.18) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(80, 255, 120, 0.18) 1px, transparent 1px);
-    background-size: 32px 32px;
+@import url('/assets/fonts/fonts.css');
     background-position: var(--grid-x, 0px) var(--grid-y, 0px);
     opacity: 0;
     transition: opacity 220ms ease, filter 220ms ease;
