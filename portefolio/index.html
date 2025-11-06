@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Portefolio — Prototype</title>
     <meta name="description"
-        content="Simple portfolio prototype with presentation and contact footer." />
+        content="Personal portfolio with profile summary, skills and curriculum." />
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="/assets/background/background.css">
     <link rel="icon" href="/assets/gba-sp/GBA-SP.svg">
@@ -14,49 +14,130 @@
 
 <body>
     <div class="wrap">
-        <header>
-            <h1>Portefolio</h1>
-            <nav aria-label="top">
-                <a href="/" style="color:var(--muted);text-decoration:none">Home</a>
-            </nav>
-        </header>
-
-        <!-- 1) Presentation with picture -->
-        <section id="intro" class="intro" aria-labelledby="intro-title">
-            <div class="avatar" role="img" aria-label="Profile avatar">
-                <!-- simple SVG avatar -->
-                <svg width="72" height="72" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg"
-                    aria-hidden="true">
-                    <rect width="72" height="72" rx="12" fill="white" fill-opacity="0.12" />
-                    <text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle"
-                        font-family="Arial, Helvetica, sans-serif" font-size="28" fill="#042029">T</text>
+        <header class="profile-header">
+            <div class="profile-avatar" role="img" aria-label="Stylised avatar with the initial T">
+                <svg width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <rect width="80" height="80" rx="18" fill="rgba(255,255,255,0.1)" />
+                    <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle"
+                        font-family="'Pixeloid Sans', Arial, sans-serif" font-size="34" fill="#0c142f">T</text>
                 </svg>
             </div>
-            <div>
-                <h2 id="intro-title" style="margin:0 0 .5rem 0">Hi — I'm Tadeo</h2>
-                <p>
-                    I'm a developer and creative, looking to make an impact. This is a simple portfolio prototype showing a short
-                    presentation, a projects slider and a contact footer. It's intentionally minimal so we can iterate
-                    quickly.
+            <div class="profile-heading">
+                <p class="eyebrow">Tadeo Amigo — Creative Developer</p>
+                <h1>Design-friendly engineer crafting playful web experiences.</h1>
+                <p class="intro-copy">
+                    I blend interactive 3D, thoughtful design systems and accessible front-end engineering to build
+                    joyful products. I currently explore game-inspired UI and experimental visuals for the web.
                 </p>
+                <ul class="profile-actions">
+                    <li><a href="mailto:tadeo.amigo@gmail.com" class="chip">Email</a></li>
+                    <li><a href="https://tamigore.github.io/projects/" class="chip">Projects</a></li>
+                    <li><a href="https://www.linkedin.com/in/tadeo-amigo" class="chip" target="_blank" rel="noreferrer">LinkedIn</a></li>
+                </ul>
             </div>
-        </section>
+        </header>
 
-        <!-- 3) Footer / Contact -->
-        <footer>
-            <div class="contact">
-                <div>
-                    <strong>Contact</strong>
-                    <div style="color:var(--muted)">Email: <a href="mailto:tadeo.amigo@gmail.com"
-                            style="color:var(--accent)">tadeo.amigo@gmail.com</a></div>
+        <main class="profile-layout">
+            <aside class="profile-sidebar" aria-labelledby="skills-title">
+                <div class="sidebar-card">
+                    <h2 id="skills-title">Skills</h2>
+                    <ul class="tag-list">
+                        <li>TypeScript</li>
+                        <li>Three.js</li>
+                        <li>React</li>
+                        <li>Node.js</li>
+                        <li>WebGL</li>
+                        <li>Shaders</li>
+                        <li>Design Systems</li>
+                        <li>Accessibility</li>
+                        <li>Creative Coding</li>
+                    </ul>
                 </div>
-                <div style="margin-left:auto;color:var(--muted)">Want to collaborate? Send a short note — I'll reply
-                    within a few days.</div>
-            </div>
-        </footer>
+                <div class="sidebar-card">
+                    <h3>Tools</h3>
+                    <ul class="meta-list">
+                        <li>Figma &amp; FigJam</li>
+                        <li>Blender</li>
+                        <li>Affinity Designer</li>
+                        <li>Vite / Astro</li>
+                        <li>Git &amp; GitHub Actions</li>
+                    </ul>
+                </div>
+                <div class="sidebar-card">
+                    <h3>Languages</h3>
+                    <ul class="meta-list">
+                        <li>French — native</li>
+                        <li>English — fluent</li>
+                        <li>Spanish — conversational</li>
+                    </ul>
+                </div>
+            </aside>
+
+            <section class="profile-content" aria-labelledby="curriculum-title">
+                <h2 id="curriculum-title">Curriculum</h2>
+                <div class="timeline">
+                    <article class="timeline-item">
+                        <header>
+                            <div>
+                                <h3>Senior Front-End Engineer</h3>
+                                <p class="timeline-meta">Ami Studio · Remote · 2022 — Present</p>
+                            </div>
+                            <span class="timeline-tag">Full-time</span>
+                        </header>
+                        <ul>
+                            <li>Lead development of immersive marketing websites blending 3D, audio and motion.</li>
+                            <li>Designed reusable component systems accelerating experimentation by 30%.</li>
+                            <li>Partnered with designers to deliver accessible experiences shipped to millions of users.</li>
+                        </ul>
+                    </article>
+
+                    <article class="timeline-item">
+                        <header>
+                            <div>
+                                <h3>Lead Creative Technologist</h3>
+                                <p class="timeline-meta">Playground Lab · Paris · 2019 — 2022</p>
+                            </div>
+                            <span class="timeline-tag">Studio</span>
+                        </header>
+                        <ul>
+                            <li>Architected custom Three.js render pipelines for branded web experiences.</li>
+                            <li>Mentored a cross-disciplinary team (dev + design) to prototype at high fidelity.</li>
+                            <li>Presented R&amp;D findings on WebXR and procedural animation at industry events.</li>
+                        </ul>
+                    </article>
+
+                    <article class="timeline-item">
+                        <header>
+                            <div>
+                                <h3>Full-Stack Developer</h3>
+                                <p class="timeline-meta">Pixelated · Toulouse · 2016 — 2019</p>
+                            </div>
+                            <span class="timeline-tag">Agency</span>
+                        </header>
+                        <ul>
+                            <li>Delivered data-rich dashboards with React, Express and PostgreSQL.</li>
+                            <li>Improved CI pipelines, reducing deploy time from 20 to 6 minutes.</li>
+                            <li>Consulted with clients to turn product briefs into living design systems.</li>
+                        </ul>
+                    </article>
+
+                    <article class="timeline-item">
+                        <header>
+                            <div>
+                                <h3>Bachelor of Computer Science</h3>
+                                <p class="timeline-meta">Université Paul Sabatier · Toulouse · 2013 — 2016</p>
+                            </div>
+                            <span class="timeline-tag">Education</span>
+                        </header>
+                        <p>Specialised in real-time graphics and human-computer interaction. Graduated with honours.</p>
+                    </article>
+                </div>
+            </section>
+        </main>
     </div>
 
     <script src="/assets/background/grid.js" defer></script>
+    <script src="/assets/ui/burger-menu.js" defer></script>
     <script src="scripts.js" defer></script>
 </body>
 

@@ -1,0 +1,191 @@
+/* Shared burger menu styles */
+.burger-root {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 2000;
+    pointer-events: none;
+}
+
+.burger-toggle {
+    pointer-events: auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(7, 10, 24, 0.86);
+    backdrop-filter: blur(6px);
+    color: inherit;
+    cursor: pointer;
+    transition: border-color 160ms ease, transform 160ms ease, background 160ms ease;
+}
+
+.burger-toggle:hover,
+.burger-toggle:focus-visible {
+    border-color: rgba(255, 255, 255, 0.35);
+    transform: translateY(-1px);
+    background: rgba(10, 14, 32, 0.92);
+    outline: none;
+}
+
+.burger-toggle:active {
+    transform: scale(0.97);
+}
+
+.burger-line {
+    position: relative;
+    width: 20px;
+    height: 2px;
+    background: currentColor;
+    border-radius: 999px;
+    transition: background 180ms ease;
+}
+
+.burger-line::before,
+.burger-line::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    width: 20px;
+    height: 2px;
+    background: currentColor;
+    border-radius: 999px;
+    transition: transform 200ms ease, top 200ms ease, bottom 200ms ease;
+}
+
+.burger-line::before {
+    top: -6px;
+}
+
+.burger-line::after {
+    bottom: -6px;
+}
+
+body.burger-open .burger-line {
+    background: transparent;
+}
+
+body.burger-open .burger-line::before {
+    top: 0;
+    transform: rotate(45deg);
+}
+
+body.burger-open .burger-line::after {
+    bottom: 0;
+    transform: rotate(-45deg);
+}
+
+.burger-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.54);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 220ms ease;
+    z-index: 1400;
+}
+
+body.burger-open .burger-backdrop {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.burger-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: min(280px, 82vw);
+    padding: 80px 28px 32px;
+    background: rgba(8, 11, 26, 0.96);
+    box-shadow: -8px 0 24px rgba(0, 0, 0, 0.4);
+    transform: translateX(110%);
+    transition: transform 240ms ease;
+    z-index: 1500;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    color: #f5f7ff;
+}
+
+body.burger-open .burger-panel {
+    transform: translateX(0);
+}
+
+.burger-heading {
+    font-size: 1.05rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--accent, #b8bfff);
+    margin: 0;
+}
+
+.burger-nav {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.burger-nav a {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: #f5f7ff;
+    font-size: 1rem;
+    padding: 10px 14px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    transition: color 160ms ease, border-color 160ms ease, background 160ms ease, transform 160ms ease;
+}
+
+.burger-nav a:hover,
+.burger-nav a:focus-visible {
+    color: var(--accent, #b8bfff);
+    border-color: rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateX(2px);
+    outline: none;
+}
+
+.burger-nav a[aria-current="page"] {
+    color: var(--accent, #b8bfff);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.burger-footer {
+    margin-top: auto;
+    font-size: 0.8rem;
+    color: rgba(245, 247, 255, 0.6);
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+@media (max-width: 480px) {
+    .burger-root {
+        top: 12px;
+        right: 12px;
+    }
+
+    .burger-toggle {
+        width: 44px;
+        height: 44px;
+    }
+}

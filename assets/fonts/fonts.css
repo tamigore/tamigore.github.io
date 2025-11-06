@@ -7,16 +7,15 @@
   font-display: swap;
 }
 
-@font-face {
-  font-family: 'Micro';
-  src: url('/assets/fonts/Micro/Micro6.ttf') format('truetype');
-  font-weight: normal;
+/* @font-face {
+  font-family: 'Pixeloid Sans';
+  src: url('/assets/fonts/PixeloidSans/PixeloidSans-Bold.ttf') format('truetype');
+  font-weight: bold;
   font-style: normal;
   font-display: swap;
-}
+} */
 
 :root {
   /* Default font stack used across the site */
-  --titles: 'Micro', system-ui, 'Segoe UI', Roboto, Inter, Arial, sans-serif;
   --site-font: 'Pixeloid Sans', system-ui, 'Segoe UI', Roboto, Inter, Arial, sans-serif;
 }
