@@ -359,8 +359,50 @@ else {
 		window.location.href = resolvedHref;
 	}
 
+	function pickWrapperFromEvent(event) {
+		const rect = container.getBoundingClientRect();
+		pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+		pointer.y = -(((event.clientY - rect.top) / rect.height) * 2 - 1);
+		raycaster.setFromCamera(pointer, camera);
+		const hit = raycaster.intersectObjects(scene.children, true)[0];
+		let node = hit?.object;
+		while (node) {
+			if (node.userData?.isGridWrapper) return node;
+			node = node.parent;
+		}
+		return null;
+	}
+
+	let activeTouchWrapper = null;
+
+	function handleTouchDown(e) {
+		if (e.pointerType !== 'touch') return;
+		const wrapper = pickWrapperFromEvent(e);
+		if (!wrapper) return;
+		container.setPointerCapture(e.pointerId);
+		activeTouchWrapper = wrapper;
+		wrapper.userData.hovered = true;
+		wrapper.userData.targetRotationY = wrapper.userData.baseRotationY + Math.PI;
+	}
+
+	function handleTouchUp(e) {
+		if (e.pointerType !== 'touch') return;
+		container.releasePointerCapture(e.pointerId);
+		if (!activeTouchWrapper) return;
+		const wrapper = activeTouchWrapper;
+		activeTouchWrapper = null;
+		wrapper.userData.hovered = false;
+		if (!wrapper.userData.toggled) {
+			wrapper.userData.targetRotationY = wrapper.userData.baseRotationY;
+		}
+	}
+
 	container.addEventListener('pointermove', onPointerMoveToggle);
 	container.addEventListener('click', onContainerClick);
+	container.addEventListener('pointerdown', handleTouchDown);
+	container.addEventListener('pointerup', handleTouchUp);
+	container.addEventListener('pointercancel', handleTouchUp);
+	container.addEventListener('lostpointercapture', handleTouchUp);
 
 	// animation
 	let mouseX = 0;
