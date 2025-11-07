@@ -57,82 +57,26 @@ else {
 		'../assets/3D/LonelyBot.glb',
 		'../assets/3D/Leaffliction.glb',
 	];
+	const modelLinks = [
+		'https://github.com/tamigore/H42N42',
+		'https://www.webtoons.com/en/canvas/beyond-bad/list?title_no=795866',
+		'https://github.com/tamigore/ft_turing',
+		'https://github.com/tamigore/malloc',
+		'https://github.com/tamigore/RT',
+		'https://github.com/tamigore/ETZ',
+		'https://github.com/eestela42/ft_minecraft',
+		'https://github.com/tamigore/LonelyBot',
+		'https://github.com/elpastorr/Leaffliction',
+	];
 	// expose for runtime inspection or later dynamic swapping
 	container._modelUrls = modelUrls;
+	container._modelLinks = modelLinks;
 
 	// store wrappers for the 3x3 grid so we can update them on resize
 	const wrappers = [];
-	let originalBox = null;
-	let originalSize = null;
-	let originalCenter = null;
 
 	// loader UI elements (optional)
 	const loaderEl = container.querySelector('.three-loader');
-	const loaderPercentEl = loaderEl?.querySelector('.three-loader-percent');
-
-	// helper: try loading from a list of URLs sequentially until one succeeds
-	function tryLoadModel(urls, onProgress, onSuccess, onError) {
-		const list = Array.isArray(urls) ? urls.slice() : [urls];
-		const attempts = [];
-		const tryNext = () => {
-			if (!list.length) {
-				const err = new Error('no model URLs left');
-				err.attempts = attempts;
-				if (onError) onError(err);
-				return;
-			}
-			const u = list.shift();
-			console.info('three-scene: attempting to load model', u);
-			loader.load(u, (gltf) => onSuccess(gltf, u), onProgress, (err) => {
-				attempts.push({ url: u, status: err?.target?.status || null, message: err.message || String(err) });
-				console.warn('three-scene: failed to load', u, { status: err?.target?.status || null, message: err.message || String(err) });
-				// show a small debug panel listing attempted URLs and statuses to help diagnose
-				try {
-					const panel = document.createElement('div');
-					panel.className = 'model-debug';
-					panel.style = 'position:fixed;left:12px;bottom:12px;right:12px;max-height:40vh;overflow:auto;background:rgba(0,0,0,0.85);color:#fff;padding:12px;border-radius:8px;z-index:99999;font-family:monospace;font-size:13px;';
-					const title = document.createElement('div');
-					title.textContent = 'Model load attempts';
-					title.style = 'font-weight:700;margin-bottom:8px;';
-					panel.appendChild(title);
-					if (!attempts.length) {
-						const p = document.createElement('div');
-						p.textContent = 'No attempts recorded';
-						panel.appendChild(p);
-					} else {
-						attempts.forEach(a => {
-							const row = document.createElement('div');
-							row.style = 'margin-bottom:6px;';
-							const url = document.createElement('div');
-							url.textContent = a.url || '<unknown>';
-							url.style = 'color:#9bd;';
-							const msg = document.createElement('div');
-							msg.textContent = `status: ${a.status || 'n/a'} message: ${a.message || ''}`;
-							msg.style = 'color:#ccc;font-size:12px;';
-							row.appendChild(url);
-							row.appendChild(msg);
-							panel.appendChild(row);
-						});
-					}
-					const close = document.createElement('button');
-					close.textContent = 'Close';
-					close.style = 'position:absolute;top:6px;right:8px;background:transparent;border:1px solid rgba(255,255,255,0.08);color:#fff;padding:4px 8px;border-radius:6px;cursor:pointer;';
-					close.addEventListener('click', () => panel.remove());
-					panel.appendChild(close);
-					document.body.appendChild(panel);
-				} catch (e) {
-					console.warn('three-scene: failed to render debug panel', e);
-				}
-				// try next URL
-				tryNext();
-			});
-		};
-		// quick sanity: if served via file:// it's unlikely XHR will work
-		if (typeof location !== 'undefined' && location.protocol === 'file:') {
-			console.warn('three-scene: page is served via file:// — please run a local HTTP server so GLTFLoader can fetch .glb files (e.g. python -m http.server)');
-		}
-		tryNext();
-	}
 
 	// Load one model per grid cell using `modelUrls`. Missing entries fall back to
 	// the default `modelUrl`. We load each unique URL once and clone per tile.
@@ -213,6 +157,7 @@ else {
 				const source = info.src;
 				const instance = source.clone(true);
 				const wrapper = new THREE.Group();
+				const href = modelLinks[idx] || null;
 
 				// center per-instance
 				instance.position.sub(info.center);
@@ -229,7 +174,10 @@ else {
 
 				wrapper.add(instance);
 				scene.add(wrapper);
-				wrappers.push({ wrapper, instance, i, j });
+				const entry = { wrapper, instance, i, j, link: href };
+				wrappers.push(entry);
+				if (!wrapper.userData) wrapper.userData = {};
+				if (typeof wrapper.userData.clickUrl === 'undefined') wrapper.userData.clickUrl = href;
 			}
 
 			// layout function uses the computed maxDim
@@ -287,6 +235,7 @@ else {
 						// set a default facing rotation so models look forward; store base rotation
 						wrapper.rotation.set(0, -Math.PI / 2, 0);
 						if (!wrapper.userData) wrapper.userData = {};
+						if (typeof wrapper.userData.clickUrl === 'undefined') wrapper.userData.clickUrl = entry.link;
 						wrapper.userData.baseRotationY = wrapper.rotation.y;
 						wrapper.userData.targetRotationY = wrapper.rotation.y;
 						wrapper.userData.hovered = false;
@@ -378,8 +327,40 @@ else {
 		}
 	}
 
+	function onContainerClick(e) {
+		const intersects = raycaster.intersectObjects(scene.children, true);
+		let node = intersects[0].object;
+		let wrapper = null;
+		while (node) {
+			if (node.userData && node.userData.isGridWrapper) {
+				wrapper = node;
+				break;
+			}
+			node = node.parent;
+		}
+		if (!wrapper) return;
+		const href = wrapper.userData?.clickUrl;
+		if (!href) return;
+
+		let resolvedHref = href;
+		try {
+			resolvedHref = new URL(href, window.location.href).toString();
+		} catch (err) {
+			console.warn('three-scene: unable to resolve link', href, err);
+		}
+
+		if (e.metaKey || e.ctrlKey) {
+			window.open(resolvedHref, '_blank');
+			return;
+		}
+
+		e.preventDefault();
+		e.stopPropagation();
+		window.location.href = resolvedHref;
+	}
+
 	container.addEventListener('pointermove', onPointerMoveToggle);
-	// container.addEventListener('pointerdown', onPointerDownToggle);
+	container.addEventListener('click', onContainerClick);
 
 	// animation
 	let mouseX = 0;
