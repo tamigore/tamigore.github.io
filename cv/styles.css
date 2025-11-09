@@ -58,6 +58,39 @@ body {
     line-height: 1.25;
 }
 
+.language-switch {
+    display: inline-flex;
+    gap: 0.4rem;
+    margin: 0 0 0.75rem;
+}
+
+.lang-btn {
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: border-color 150ms ease, background 150ms ease, transform 150ms ease;
+}
+
+.lang-btn:hover,
+.lang-btn:focus-visible {
+    transform: translateY(-1px);
+    border-color: rgba(255, 255, 255, 0.35);
+    background: rgba(255, 255, 255, 0.12);
+    outline: none;
+}
+
+.lang-btn.is-active {
+    border-color: var(--accent);
+    background: rgba(184, 191, 255, 0.18);
+    color: var(--text-primary);
+}
+
 .eyebrow {
     margin: 0 0 0.75rem;
     font-size: 0.85rem;
@@ -301,6 +334,10 @@ body {
 
     .sidebar-card {
         flex: 1 1 260px;
+    }
+
+    .language-switch {
+        justify-content: center;
     }
 }
 
