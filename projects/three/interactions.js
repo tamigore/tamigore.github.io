@@ -1,6 +1,6 @@
 import { THREE } from './three-deps.js';
 
-export function setupPointerToggle({ container, camera, scene, onPointerMove }) {
+export function setupPointerToggle({ container, camera, scene }) {
 	const raycaster = new THREE.Raycaster();
 	const pointer = new THREE.Vector2();
 
@@ -11,8 +11,6 @@ export function setupPointerToggle({ container, camera, scene, onPointerMove }) 
 		pointer.set(normalizedX, normalizedY);
 		raycaster.setFromCamera(pointer, camera);
 		const intersects = raycaster.intersectObjects(scene.children, true);
-		if (typeof onPointerMove === 'function')
-			onPointerMove({ normalizedX, normalizedY });
 		if (!intersects.length) return;
 		let node = intersects[0].object;
 		let wrapper = null;

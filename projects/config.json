@@ -4,63 +4,63 @@
 		{
 			"key": "H42N42",
 			"label": "H42N42",
-			"description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec fringilla, mauris ut mattis tristique, felis risus fringilla mi, nec semper ante ante a velit.",
+			"description": "OCaml web simulation of contamination in a close environment.",
 			"path": "../assets/3D/Textures/H42N42.png",
 			"tintHex": "#1eff00"
 		},
 		{
 			"key": "BeyondBad",
 			"label": "Beyond Bad",
-			"description": "efj eiwfjiweoj fpoe hfper hgap erghrioe jgaoe gjoeiarjger gjeiorgjeiog jaeroig jeraoigj oigjer agjear g",
+			"description": "Webtoon in a dystopian future from the perspective of two brothers.",
 			"path": "../assets/3D/Textures/BeyondBad.png",
 			"tintHex": "#cc3366"
 		},
 		{
 			"key": "Turing",
 			"label": "Turing",
-			"description": "eiwfjiweoj fpoe hfper hgap erghrioe jgaoe gjoeiarjger gjeiorgjeiog jaeroig jeraoigj oigjer agjear g",
+			"description": "Simulation of a Turing machine in Ocaml with json input as rules.",
 			"path": "../assets/3D/Textures/Turing.jpg",
 			"tintHex": "#dd9e2f"
 		},
 		{
 			"key": "Malloc",
 			"label": "Malloc",
-			"description": "fpoe hfper hgap erghrioe jgaoe gjoeiarjger gjeiorgjeiog jaeroig jeraoigj oigjer agjear g",
+			"description": "C Memory allocator implementation with debugging features.",
 			"path": "../assets/3D/Textures/Malloc.jpg",
 			"tintHex": "#7756c7"
 		},
 		{
 			"key": "Raytracer",
 			"label": "Raytracer",
-			"description": "hgap erghrioe jgaoe gjoeiarjger gjeiorgjeiog jaeroig jeraoigj oigjer agjear g",
+			"description": "Real-time ray tracing renderer with global illumination and reflections.",
 			"path": "../assets/3D/Textures/RT.jpg",
 			"tintHex": "#c5c5c5ff"
 		},
 		{
 			"key": "ETZ",
 			"label": "ETZ",
-			"description": "jgaoe gjoeiarjger gjeiorgjeiog jaeroig jeraoigj oigjer agjear g",
+			"description": "Top-down shooter featuring time rewind, power ups & varied monsters.",
 			"path": "../assets/3D/Textures/ETZ.png",
 			"tintHex": "#4d6aff"
 		},
 		{
 			"key": "Minecraft",
 			"label": "Minecraft",
-			"description": "gjeiorgjeiog jaeroig jeraoigj oigjer agjear g",
+			"description": "C++ OpenGL voxel with advanced procedural generation and gameplay.",
 			"path": "../assets/3D/Textures/Minecraft.jpg",
 			"tintHex": "#e05f2a"
 		},
 		{
 			"key": "LonelyBot",
 			"label": "Lonely Bot",
-			"description": "gjeiorgjeiog jaeroig jeraoigj oigjer agjear g",
+			"description": "Small physics-based adventure platformer spanning multiple eras.",
 			"path": "../assets/3D/Textures/LonelyBot.png",
 			"tintHex": "#25e4da"
 		},
 		{
 			"key": "Leaffliction",
 			"label": "Leaffliction",
-			"description": "agjear g",
+			"description": "AI tool for leaf disease detection using computer vision.",
 			"path": "../assets/3D/Textures/Leaffliction.jpg",
 			"tintHex": "#99e641"
 		}

@@ -4,7 +4,6 @@ import { createLoadingManager } from './three/loading-manager.js';
 import { createLabelFactory } from './three/label-factory.js';
 import { buildModelGrid } from './three/model-grid.js';
 import { setupPointerToggle } from './three/interactions.js';
-import { startAnimationLoop } from './three/animation.js';
 
 const container = document.getElementById('three-container');
 
@@ -65,12 +64,10 @@ else {
 				loaderEl,
 			});
 
-			const animationApi = startAnimationLoop({ camera, scene, renderer, wrappers });
 			pointerCleanup = setupPointerToggle({
 				container,
 				camera,
 				scene,
-				// onPointerMove: animationApi.setPointer,
 			});
 
 			onResize();
