@@ -156,7 +156,7 @@
     const btn = document.createElement('button');
     btn.setAttribute('aria-label', 'Menu');
     btn.type = 'button';
-    btn.innerHTML = `<span class="icon"><span></span></span>`;
+    btn.innerHTML = `<p id="helper">Info</p>`;
 
     const panel = document.createElement('div');
     panel.className = 'menu-panel';

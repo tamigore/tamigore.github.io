@@ -247,15 +247,15 @@
     position: fixed;
     left: 12px;
     top: 12px;
-    width: 40px;
-    height: 36px;
+    width: 66px;
+    height: 42px;
     display: grid;
     place-items: center;
     z-index: 9998;
 }
 .burger button {
-    width: 36px;
-    height: 32px;
+    width: 66px;
+    height: 42px;
     border-radius: 6px;
     border: none;
     background: rgba(0,0,0,0.45);
@@ -266,25 +266,11 @@
     padding: 6px;
 }
 .burger button:focus { outline: 2px solid var(--accent); }
-.burger .icon {
-    width: 18px;
-    height: 12px;
-    position: relative;
+
+#helper {
+    margin: 0;
+    padding: 0;
 }
-.burger .icon::before,
-.burger .icon::after,
-.burger .icon span {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: #dbeafe;
-    border-radius: 2px;
-}
-.burger .icon span { top: 5px; }
-.burger .icon::before { top: 0; }
-.burger .icon::after { bottom: 0; }
 
 /* Menu panel */
 .menu-panel {
@@ -312,7 +298,7 @@
     border-radius: 6px;
     cursor: pointer;
 }
-.menu-panel button:hover { background: rgba(255,255,255,0.02); }
+.menu-panel button:hover { background: rgba(255, 255, 255, 0.078); }
 .menu-panel .title { font-weight: 600; font-size: 13px; padding: 6px 8px; color: var(--muted); }
 
 /* Ensure the burger/menu use the same font as the page.

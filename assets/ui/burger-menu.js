@@ -2,7 +2,7 @@
     const cssHref = '/assets/ui/burger-menu.css';
     const defaultLinks = [
         { label: 'Home', href: '/loading/' },
-        { label: 'Portefolio', href: '/portefolio/' },
+        { label: 'CV', href: '/cv/' },
         { label: 'Projects', href: '/projects/' },
         { label: 'Games', href: '/games/' }
     ];
