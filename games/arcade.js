@@ -137,26 +137,6 @@
     };
   })();
 
-  // Inject a top-right Home button that navigates back to site root
-  (function injectHomeButton() {
-    const container = document.createElement('div');
-    container.className = 'home-btn';
-
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.setAttribute('aria-label', 'Home');
-    btn.title = 'Back to home';
-    btn.innerHTML = `<span class="icon" aria-hidden="true"></span>`;
-
-    btn.addEventListener('click', () => {
-      // navigate to site root
-      window.location.href = '/';
-    });
-
-    container.appendChild(btn);
-    document.body.appendChild(container);
-  })();
-
   // Initial
   load(0);
 
