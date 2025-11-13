@@ -34,7 +34,7 @@
 			"label": "Raytracer",
 			"description": "Real-time ray tracing renderer with global illumination and reflections.",
 			"path": "../assets/3D/Textures/RT.jpg",
-			"tintHex": "#c5c5c5ff"
+			"tintHex": "#c5c5c5"
 		},
 		{
 			"key": "ETZ",

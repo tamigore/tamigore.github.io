@@ -47,20 +47,6 @@
     const caption = document.querySelector('.caption');
     if (!mini) return;
 
-    async function waitForPrefetch(maxWaitMs = 12000) {
-        const prefetch = (typeof window !== 'undefined') ? window.__projectGLBPrefetchPromise : null;
-        if (!prefetch || typeof prefetch.then !== 'function') return;
-        try {
-            await Promise.race([
-                prefetch,
-                new Promise((resolve) => setTimeout(resolve, maxWaitMs))
-            ]);
-        } catch (err) {
-            // ignore failures so navigation still proceeds after timeout
-            console.warn('prefetch wait aborted', err);
-        }
-    }
-
     // Sync sound with the drop start if it hasn't played yet
     mini.addEventListener('animationstart', (e) => {
         if (e.animationName === 'preDrop')
@@ -71,8 +57,6 @@
     mini.addEventListener('animationend', (e) => {
         if (e.animationName !== 'cubeMini') return;
         if (caption) caption.textContent = 'Play';
-        setTimeout(() => {
-            waitForPrefetch().finally(() => window.location.replace(target));
-        }, 1000);
+        setTimeout(() => { window.location.href = target; }, 600);
     });
 })();

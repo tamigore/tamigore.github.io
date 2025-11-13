@@ -9,6 +9,7 @@
     --mouse-y-px: 50vh;
     --bg: #0f1724;
     --card: #111827;
+    --pulse: #5128b1;
     --accent: #8a4deb;
     color-scheme: dark;
 }
@@ -67,17 +68,17 @@ body.grid-hover::after {
 @keyframes grid-glow {
     0% {
         opacity: .72;
-        filter: drop-shadow(0 0 4px rgba(80, 255, 120, 0.06));
+        filter: drop-shadow(0 0 4px var(--pulse));
     }
 
     50% {
         opacity: 1;
-        filter: drop-shadow(0 0 20px rgba(80, 255, 120, 0.18));
+        filter: drop-shadow(0 0 20px var(--accent));
     }
 
     100% {
         opacity: .72;
-        filter: drop-shadow(0 0 4px rgba(80, 255, 120, 0.06));
+        filter: drop-shadow(0 0 4px var(--pulse));
     }
 }
 
