@@ -5,8 +5,16 @@ const DEFAULT_GRID = {
 	rows: 3,
 	columns: 3,
 	rotationY: -Math.PI / 2,
+	widthSpacingFactor: 1.15,
 	spacingFactor: 1.15,
-	targetScaleRatio: 0.75,
+	verticalSpacingFactor: 0.75,
+	targetScaleRatio: 1,
+	targetModelPixels: 420,
+};
+
+const RESPONSIVE_BREAKPOINTS = {
+	desktop: 1024,
+	tablet: 768,
 };
 
 async function loadModelAndTextures(loader, textureLoader, modelUrl, textureVariants = []) {
@@ -244,14 +252,12 @@ function attachLabelMeshes(wrapper, variant, labelFactory) {
 	return { frontLabelMesh, backLabelMesh };
 }
 
-function createGridWrappers({ sourceScene, texturePayload, finalGrid, scene, center, labelFactory }) {
+function createGridWrappers({ sourceScene, texturePayload, scene, center, labelFactory }) {
 	const wrappers = [];
 	const fallbackVariant = texturePayload[0] || { texture: null, key: 'fallback', label: 'Fallback' };
-	const totalCells = finalGrid.rows * finalGrid.columns;
-	for (let idx = 0; idx < totalCells; idx++) {
-		const variant = texturePayload[idx] || fallbackVariant;
-		const row = Math.floor(idx / finalGrid.columns);
-		const column = idx % finalGrid.columns;
+	const variants = texturePayload.length ? texturePayload : [fallbackVariant];
+	for (let idx = 0; idx < variants.length; idx++) {
+		const variant = variants[idx] || fallbackVariant;
 		const instance = prepareInstance(sourceScene, center);
 		const wrapper = new THREE.Group();
 		applyTextureVariant(instance, variant);
@@ -264,8 +270,6 @@ function createGridWrappers({ sourceScene, texturePayload, finalGrid, scene, cen
 		wrappers.push({
 			wrapper,
 			instance,
-			column,
-			row,
 			variant,
 			frontLabel: frontLabelMesh,
 			backLabel: backLabelMesh,
@@ -274,13 +278,90 @@ function createGridWrappers({ sourceScene, texturePayload, finalGrid, scene, cen
 	return wrappers;
 }
 
-function createLayoutModels({ container, finalGrid, camera, renderer, modelBounds, wrappers }) {
+function resolveResponsiveGrid({ containerWidth, baseGrid, totalItems }) {
+	const width = containerWidth || 0;
+	const device = width >= RESPONSIVE_BREAKPOINTS.desktop
+		? 'desktop'
+		: width >= RESPONSIVE_BREAKPOINTS.tablet
+			? 'tablet'
+			: 'phone';
+	const baseColumns = Math.max(1, baseGrid.columns || DEFAULT_GRID.columns);
+	const targetModelPixels = baseGrid.targetModelPixels || DEFAULT_GRID.targetModelPixels;
+	const spacingX = typeof baseGrid.widthSpacingFactor === 'number'
+		? baseGrid.widthSpacingFactor
+		: typeof baseGrid.spacingFactor === 'number'
+			? baseGrid.spacingFactor
+			: DEFAULT_GRID.widthSpacingFactor;
+	const spacingY = typeof baseGrid.verticalSpacingFactor === 'number'
+		? baseGrid.verticalSpacingFactor
+		: spacingX;
+	let deviceColumnCap = baseColumns;
+	if (device === 'tablet')
+		deviceColumnCap = Math.min(deviceColumnCap, 2);
+	else if (device === 'phone')
+		deviceColumnCap = 1;
+	const desiredCellWidth = targetModelPixels * spacingX;
+	let columnsFromWidth = desiredCellWidth > 0 ? Math.floor(width / desiredCellWidth) : baseColumns;
+	if (!Number.isFinite(columnsFromWidth) || columnsFromWidth <= 0)
+		columnsFromWidth = 1;
+	const columns = Math.max(1, Math.min(deviceColumnCap, columnsFromWidth));
+	const items = Math.max(0, totalItems);
+	const rows = items > 0 ? Math.ceil(items / columns) : 1;
+
+	return {
+		...baseGrid,
+		columns,
+		device,
+		rows,
+		spacingX,
+		spacingY,
+		targetModelPixels,
+	};
+}
+
+function createLayoutModels({ container, baseGrid, camera, renderer, modelBounds, wrappers }) {
 	return function layoutModels() {
-		const w = container.clientWidth;
-		const h = container.clientHeight;
-		const cellW = w / finalGrid.columns;
-		const cellH = h / finalGrid.rows;
-		const targetPixels = Math.min(cellW, cellH) * finalGrid.targetScaleRatio;
+		const rect = container.getBoundingClientRect();
+		const widthPx = Math.max(1, Math.round(rect.width || container.clientWidth || 1));
+		const grid = resolveResponsiveGrid({
+			containerWidth: widthPx,
+			baseGrid,
+			totalItems: wrappers.length,
+		});
+		const columns = Math.max(1, grid.columns);
+		const rows = Math.max(1, grid.rows || Math.ceil(wrappers.length / columns));
+		const targetModelPixels = grid.targetModelPixels || DEFAULT_GRID.targetModelPixels;
+		const existingHeight = rect.height || container.clientHeight || targetModelPixels;
+		if (container.dataset)
+			container.dataset.gridDevice = grid.device;
+		else
+			container.setAttribute('data-grid-device', grid.device);
+		if (container.dataset) {
+			container.dataset.gridColumns = String(columns);
+			container.dataset.gridRows = String(rows);
+		}
+		const spacingX = typeof grid.widthSpacingFactor === 'number'
+			? grid.widthSpacingFactor
+			: typeof grid.spacingFactor === 'number'
+				? grid.spacingFactor
+				: DEFAULT_GRID.widthSpacingFactor;
+		const spacingY = typeof grid.verticalSpacingFactor === 'number'
+			? grid.verticalSpacingFactor
+			: spacingX;
+		const targetPixels = targetModelPixels * (grid.targetScaleRatio || 1);
+		const desiredHeight = Math.max(rows * targetModelPixels * spacingY, targetModelPixels);
+		const newHeightPx = Math.round(desiredHeight);
+		if (container._lastDesiredHeight !== newHeightPx) {
+			container.style.height = `${newHeightPx}px`;
+			container._lastDesiredHeight = newHeightPx;
+		}
+		const updatedRect = container.getBoundingClientRect();
+		const heightPx = Math.max(1, Math.round(updatedRect.height || container.clientHeight || existingHeight || targetModelPixels));
+		const aspect = widthPx / heightPx;
+		if (Number.isFinite(aspect) && aspect > 0) {
+			camera.aspect = aspect;
+			camera.updateProjectionMatrix();
+		}
 		const fovRad = (camera.fov * Math.PI) / 180;
 		let distance = Math.max(2, camera.position.z);
 		let scaleFactor = 1;
@@ -289,28 +370,30 @@ function createLayoutModels({ container, finalGrid, camera, renderer, modelBound
 
 		for (let it = 0; it < maxIterations; it++) {
 			const worldHeightAtDistance = 2 * distance * Math.tan(fovRad / 2);
-			const worldUnitsPerPixel = worldHeightAtDistance / h;
+			const worldUnitsPerPixel = worldHeightAtDistance / heightPx;
 			scaleFactor = (targetPixels * worldUnitsPerPixel) / modelMaxDim;
 			const scaledDiameter = modelMaxDim * scaleFactor;
-			const gridWorldHeight = scaledDiameter * finalGrid.rows * finalGrid.spacingFactor;
+			const gridWorldHeight = scaledDiameter * rows * spacingY;
 			const newDistance = gridWorldHeight / (2 * Math.tan(fovRad / 2));
 			distance = distance * 0.5 + newDistance * 0.5;
 		}
 
 		const scaledDiameter = modelMaxDim * scaleFactor;
-		const cellWorldSize = scaledDiameter * finalGrid.spacingFactor;
+		const cellWorldWidth = scaledDiameter * spacingX;
+		const cellWorldHeight = scaledDiameter * spacingY;
 		let idx = 0;
-		for (let row = 0; row < finalGrid.rows; row++) {
-			for (let column = 0; column < finalGrid.columns; column++) {
+		outer: for (let row = 0; row < rows; row++) {
+			for (let column = 0; column < columns; column++) {
 				const entry = wrappers[idx++];
 				if (!entry)
-					continue;
+					break outer;
 				const { wrapper, variant } = entry;
+				wrapper.visible = true;
 				wrapper.scale.setScalar(scaleFactor);
-				const x = (column - (finalGrid.columns - 1) / 2) * cellWorldSize;
-				const y = (((finalGrid.rows - 1) / 2) - row) * cellWorldSize;
+				const x = (column - (columns - 1) / 2) * cellWorldWidth;
+				const y = (((rows - 1) / 2) - row) * cellWorldHeight;
 				wrapper.position.set(x, y, 0);
-				wrapper.rotation.set(0, finalGrid.rotationY, 0);
+				wrapper.rotation.set(0, grid.rotationY, 0);
 				wrapper.userData = wrapper.userData || {};
 				wrapper.userData.variant = variant;
 				wrapper.userData.baseRotationY = wrapper.rotation.y;
@@ -320,10 +403,15 @@ function createLayoutModels({ container, finalGrid, camera, renderer, modelBound
 				wrapper.userData.toggled = false;
 			}
 		}
+		for (; idx < wrappers.length; idx++) {
+			const entry = wrappers[idx];
+			entry.wrapper.visible = false;
+		}
 
 		camera.position.set(0, 0, distance * 1.02);
 		camera.lookAt(0, 0, 0);
-		renderer.setSize(w, h, false);
+		renderer.setSize(widthPx, heightPx, false);
+		container._currentGrid = grid;
 	};
 }
 
@@ -354,13 +442,20 @@ export async function buildModelGrid({
 		wrappers = createGridWrappers({
 			sourceScene,
 			texturePayload,
-			finalGrid,
 			scene,
 			center: modelBounds.center,
 			labelFactory,
 		});
-		const layoutModels = createLayoutModels({ container, finalGrid, camera, renderer, modelBounds, wrappers });
+		const layoutModels = createLayoutModels({ container, baseGrid: finalGrid, camera, renderer, modelBounds, wrappers });
 		layoutModels();
+		if (!container._resizeObserver && typeof ResizeObserver === 'function') {
+			const resizeObserver = new ResizeObserver(() => {
+				if (container._layoutModels)
+					container._layoutModels();
+			});
+			resizeObserver.observe(container);
+			container._resizeObserver = resizeObserver;
+		}
 		if (loaderEl)
 			loaderEl.classList.add('hidden');
 		container._layoutModels = layoutModels;

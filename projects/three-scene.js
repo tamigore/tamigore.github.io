@@ -85,6 +85,10 @@ else {
 			window.removeEventListener('resize', onResize);
 			if (pointerCleanup)
 				pointerCleanup();
+			if (container._resizeObserver) {
+				container._resizeObserver.disconnect();
+				container._resizeObserver = null;
+			}
 		};
 
 		container._threeCleanup = cleanup;
